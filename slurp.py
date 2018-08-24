@@ -4,6 +4,30 @@ import neo4j.v1
 import psycopg2.extras
 
 
+def get_im_genes(curs):
+    curs.execute("SELECT id, primaryidentifier, organismid, class FROM gene LIMIT 5")
+
+    genes = {}
+
+    for row in curs:
+        genes[row['id']] = {
+            'external_primary_id': row['primaryidentifier'],
+            'internal_organism_id': row['organismid'],
+            'type' : row['class']
+        }
+
+    return genes
+
+def get_im_organisms(curs):
+    curs.execute("SELECT id, taxonid, name, class FROM organism")
+
+    organisms = {}
+
+    for row in curs:
+        organisms[row['id']] = { 'external_primary_id': row['taxonid'], 'name': row['name'], 'type': row['class'] }
+
+    return organisms
+
 def add_genes(_genes):
     for im_id, gene in _genes.items():
         print(gene)
@@ -19,31 +43,14 @@ def add_relationships(_genes):
         session.run("MATCH (g:gene {im_id:'%s'}), (o:organism {im_id:'%s'}) CREATE (g)-[:IN_GENOME_OF]->(o)" % (im_id, gene['internal_organism_id']))
 
 
-genes = {}
-organisms = {}
-
 conn = psycopg2.connect(dbname='synbiomine-v6', user='justincc', cursor_factory=psycopg2.extras.DictCursor)
 
 with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'passw0rd')) as driver:
     with driver.session() as session:
         with conn.cursor() as curs:
-            curs.execute("SELECT id, primaryidentifier, organismid, class FROM gene LIMIT 5")
-
-            for row in curs:
-                genes[row['id']] = {
-                    'external_primary_id': row['primaryidentifier'],
-                    'internal_organism_id': row['organismid'],
-                    'type' : row['class']
-                }
-
+            genes = get_im_genes(curs)
             add_genes(genes)
-
-            curs.execute("SELECT id, taxonid, name, class FROM organism")
-
-            for row in curs:
-                organisms[row['id']] = { 'external_primary_id': row['taxonid'], 'name': row['name'], 'type': row['class'] }
-
-            add_organisms(organisms)
+            add_organisms(get_im_organisms(curs))
             add_relationships(genes)
 
 conn.close()
