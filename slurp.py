@@ -11,7 +11,7 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
             curs.execute("SELECT primaryidentifier, class FROM gene")
 
             for row in curs:
-                id, type = row['primaryidentifier'], row['class']
+                id, type = row
                 print(id, type)
                 session.run("CREATE (:gene { id:'%s', type:'%s' })" % (id, type))
 
