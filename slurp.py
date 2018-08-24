@@ -12,7 +12,7 @@ conn = psycopg2.connect(dbname='synbiomine-v6', user='justincc', cursor_factory=
 with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'passw0rd')) as driver:
     with driver.session() as session:
         with conn.cursor() as curs:
-            curs.execute("SELECT id, primaryidentifier, class FROM gene")
+            curs.execute("SELECT id, primaryidentifier, organismid, class FROM gene LIMIT 5")
 
             for row in curs:
                 genes[row['id']] = { 'external_primary_id': row['primaryidentifier'], 'type' : row['class'] }
