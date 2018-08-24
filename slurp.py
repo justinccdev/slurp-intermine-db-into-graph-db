@@ -8,7 +8,7 @@ conn = psycopg2.connect(dbname='synbiomine-v6', user='justincc', cursor_factory=
 with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'passw0rd')) as driver:
     with driver.session() as session:
         with conn.cursor() as curs:
-            curs.execute("SELECT primaryidentifier, class FROM gene WHERE primaryIdentifier='b0001'")
+            curs.execute("SELECT primaryidentifier, class FROM gene")
 
             for row in curs:
                 id, type = row['primaryidentifier'], row['class']
