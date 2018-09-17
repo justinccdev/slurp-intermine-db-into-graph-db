@@ -12,10 +12,10 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
         record = result.single()
         node = record['n']
 
-        type = node['type']
+        class_type = node['type']
 
-        if type in terms_for_classes:
-            _type = terms_for_classes[type]
+        if class_type in terms_for_classes:
+            _type = terms_for_classes[class_type]
         else:
             _type = None
 
