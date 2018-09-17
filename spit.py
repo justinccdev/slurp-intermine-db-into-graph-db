@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 
+import argparse
+
 import neo4j.v1
 import slurp.spitters
 
+parser = argparse.ArgumentParser('Spit out RDF for a given gene ID (try b0005)')
+parser.add_argument('id', help='Gene ID')
+args = parser.parse_args()
 
 prefixes = slurp.spitters.load_prefixes('config/rdf-prefixes.xml')
 terms_for_classes = slurp.spitters.get_terms_for_classes('intermine/genomic_model.xml')
@@ -11,7 +16,7 @@ nodes = {}
 
 with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'passw0rd')) as driver:
     with driver.session() as session:
-        result = session.run("match (n {id:'b0005'}) return n")
+        result = session.run("match (n {id:'%s'}) return n" % args.id)
         record = result.single()
         node = record['n']
 
@@ -26,7 +31,7 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
         if resource in prefixes:
             extensions_used.add(resource)
 
-        nodes['http://example-mine.org/ncbi:b0005'] = _type
+        nodes['http://example-mine.org/ncbi:%s' % args.id] = _type
 
 for extension_used in extensions_used:
     prefix = prefixes[extension_used]
