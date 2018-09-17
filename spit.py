@@ -1,24 +1,10 @@
 #!/usr/bin/env python3
 
 import neo4j.v1
-from lxml import etree
+import slurp.spitters
 
 
-tree = etree.parse('intermine/genomic_model.xml')
-model_package = tree.xpath('//model/@package')
-
-terms_for_classes = {}
-
-for _class in tree.xpath('//class'):
-    attrib = _class.attrib
-
-    if 'term' in attrib:
-        terms_for_classes[model_package[0] + '.' + attrib['name']] = attrib['term']
-
-"""
-for k, v in terms_for_classes.items():
-    print(k, v)
-"""
+terms_for_classes = slurp.spitters.get_terms_for_classes('intermine/genomic_model.xml')
 
 with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'passw0rd')) as driver:
     with driver.session() as session:
