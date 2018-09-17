@@ -7,6 +7,7 @@ def get_im_genes(curs):
         _genes[row['id']] = {
             'external_primary_id': row['primaryidentifier'],
             'internal_organism_id': row['organismid'],
+            'name': row['primaryidentifier'],
             'type': row['class']
         }
 
