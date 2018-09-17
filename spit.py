@@ -4,7 +4,10 @@ import neo4j.v1
 import slurp.spitters
 
 
+prefixes = slurp.spitters.load_prefixes('config/rdf-prefixes.xml')
 terms_for_classes = slurp.spitters.get_terms_for_classes('intermine/genomic_model.xml')
+extensions_used = set()
+nodes = {}
 
 with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'passw0rd')) as driver:
     with driver.session() as session:
@@ -19,8 +22,16 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
         else:
             _type = None
 
-        print(
-            """@prefix sio: <http://semanticscience.org/resource/> .
+        resource = _type.rpartition('/')[0]
+        if resource in prefixes:
+            extensions_used.add(resource)
 
-<http://example-mine.org/ncbi:b0005>
-  a %s .""" % _type)
+        nodes['http://example-mine.org/ncbi:b0005'] = _type
+
+for extension_used in extensions_used:
+    prefix = prefixes[extension_used]
+    print('@prefix %s: <%s/> .' % (prefix, extension_used))
+
+for k, v in nodes.items():
+    print('<%s>' % k)
+    print('  a <%s> .' % v)

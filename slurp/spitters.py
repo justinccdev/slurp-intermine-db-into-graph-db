@@ -1,6 +1,16 @@
 from lxml import etree
 
 
+def load_prefixes(prefixes_path):
+    prefixes = {}
+
+    tree = etree.parse(prefixes_path)
+    for prefix in tree.xpath('//prefix'):
+        prefixes[prefix.attrib['resource']] = prefix.attrib['prefix']
+
+    return prefixes
+
+
 def get_terms_for_classes(model_path):
     tree = etree.parse(model_path)
     model_package = tree.xpath('//model/@package')
