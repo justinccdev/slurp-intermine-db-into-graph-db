@@ -37,6 +37,8 @@ for extension_used in extensions_used:
     prefix = prefixes[extension_used]
     print('@prefix %s: <%s/> .' % (prefix, extension_used))
 
+print()
+
 for k, v in nodes.items():
     print('<%s>' % k)
     print('  a <%s> .' % v)
