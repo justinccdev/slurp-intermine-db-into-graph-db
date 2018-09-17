@@ -25,7 +25,11 @@ def get_im_organisms(_curs):
     organisms = {}
 
     for row in _curs:
-        organisms[row['id']] = {'external_primary_id': row['taxonid'], 'name': row['name'], 'type': row['class']}
+        organisms[row['id']] = {
+            'external_primary_id': row['taxonid'],
+            'name': row['name'],
+            'type': row['class']
+        }
 
     return organisms
 
