@@ -11,7 +11,7 @@ parser.add_argument('id', help='Gene ID')
 args = parser.parse_args()
 
 prefixes = slurp.spitters.load_rdf_prefixes('config/rdf-prefixes.xml')
-terms_for_classes = slurp.spitters.load_terms_for_classes('intermine/genomic_model.xml')
+terms_for_classes = slurp.spitters.load_terms('intermine/genomic_model.xml')
 extensions_used = set()
 nodes = {}
 

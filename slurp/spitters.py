@@ -21,7 +21,7 @@ def load_rdf_prefixes(prefixes_path):
     return prefixes
 
 
-def load_terms_for_classes(model_path):
+def load_terms(model_path):
     tree = etree.parse(model_path)
     model_package = tree.xpath('//model/@package')
 
