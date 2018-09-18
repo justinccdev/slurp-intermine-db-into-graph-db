@@ -24,8 +24,8 @@ def load_rdf_prefixes(prefixes_path):
 
     tree = etree.parse(prefixes_path)
     for prefix in tree.xpath('//prefix'):
-        prefixes[prefix.attrib['resource']] = prefix.attrib['prefix']
-        prefixes[prefix.attrib['prefix']] = prefix.attrib['resource']
+        prefixes[prefix.attrib['extension']] = prefix.attrib['prefix']
+        prefixes[prefix.attrib['prefix']] = prefix.attrib['extension']
 
     return prefixes
 
