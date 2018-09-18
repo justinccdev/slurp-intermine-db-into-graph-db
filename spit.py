@@ -24,15 +24,15 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
         class_type = node['type']
 
         if class_type in terms_for_classes:
-            _type = terms_for_classes[class_type]
+            term = terms_for_classes[class_type]
         else:
-            _type = None
+            term = None
 
-        resource = _type.rpartition('/')[0]
-        if resource in prefixes:
-            extensions_used.add(resource)
+        prefix = slurp.rdf_creators.find_rdf_prefix_if_available(term, prefixes)
+        if prefix is not None:
+            extensions_used.add(prefix)
 
-        nodes[slurp.rdf_creators.create_node_subject(args.id)] = _type
+        nodes[slurp.rdf_creators.create_node_subject(args.id)] = term
 
 for extension_used in extensions_used:
     prefix = prefixes[extension_used]
