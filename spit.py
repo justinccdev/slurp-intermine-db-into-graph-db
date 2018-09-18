@@ -13,7 +13,7 @@ args = parser.parse_args()
 prefixes = slurp.spitters.load_rdf_prefixes('config/rdf-prefixes.xml')
 terms_for_classes = slurp.spitters.load_terms('intermine/genomic_model.xml')
 prefixes_used = set()
-nodes = {}
+subjects = {}
 
 with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'passw0rd')) as driver:
     with driver.session() as session:
@@ -32,14 +32,14 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
         if prefix is not None:
             prefixes_used.add(prefix)
 
-        nodes[slurp.rdf_creators.create_node_subject(args.id)] = term
+        subjects[slurp.rdf_creators.create_node_subject(args.id)] = term
 
 for prefix_used in prefixes_used:
     print('@prefix %s: <%s/> .' % (prefix_used, prefixes[prefix_used]))
 
 print()
 
-for s, o in nodes.items():
+for s, o in subjects.items():
     print('<%s>' % s)
 
     prefix, short_term = slurp.rdf_creators.find_rdf_prefix_if_available(o, prefixes)
