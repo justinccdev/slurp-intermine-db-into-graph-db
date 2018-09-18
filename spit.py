@@ -5,7 +5,7 @@ import argparse
 import neo4j.v1
 import slurp.spitters
 
-parser = argparse.ArgumentParser('Spit out RDF for a given gene ID (try b0005)')
+parser = argparse.ArgumentParser('Spit out RDF for a given gene ID (try EG11277)')
 parser.add_argument('id', help='Gene ID')
 args = parser.parse_args()
 
