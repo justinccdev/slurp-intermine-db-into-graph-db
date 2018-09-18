@@ -34,9 +34,9 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
 
         nodes[slurp.rdf_creators.create_node_subject(args.id)] = term
 
-for extension_used in prefixes_used:
-    prefix = prefixes[extension_used]
-    print('@prefix %s: <%s/> .' % (prefix, extension_used))
+for prefix_used in prefixes_used:
+    prefix = prefixes[prefix_used]
+    print('@prefix %s: <%s/> .' % (prefix, prefix_used))
 
 print()
 
