@@ -1,6 +1,16 @@
 from lxml import etree
 
 
+def load_fair_prefixes(prefixes_path):
+    prefixes = {}
+
+    tree = etree.parse(prefixes_path)
+    for prefix in tree.xpath('//prefix'):
+        prefixes[prefix.attrib['class']] = prefix.attrib['prefix']
+
+    return prefixes
+
+
 def load_rdf_prefixes(prefixes_path):
     prefixes = {}
 

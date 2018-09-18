@@ -3,6 +3,7 @@
 import argparse
 
 import neo4j.v1
+import slurp.rdf_creators
 import slurp.spitters
 
 parser = argparse.ArgumentParser('Spit out RDF for a given gene ID (try EG11277)')
@@ -31,7 +32,7 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
         if resource in prefixes:
             extensions_used.add(resource)
 
-        nodes['http://synbiomine.org/ncbi:%s' % args.id] = _type
+        nodes[slurp.rdf_creators.create_node_subject(args.id)] = _type
 
 for extension_used in extensions_used:
     prefix = prefixes[extension_used]
