@@ -9,7 +9,7 @@ parser = argparse.ArgumentParser('Spit out RDF for a given gene ID (try EG11277)
 parser.add_argument('id', help='Gene ID')
 args = parser.parse_args()
 
-prefixes = slurp.spitters.load_prefixes('config/rdf-prefixes.xml')
+prefixes = slurp.spitters.load_rdf_prefixes('config/rdf-prefixes.xml')
 terms_for_classes = slurp.spitters.get_terms_for_classes('intermine/genomic_model.xml')
 extensions_used = set()
 nodes = {}

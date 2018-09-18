@@ -1,7 +1,7 @@
 from lxml import etree
 
 
-def load_prefixes(prefixes_path):
+def load_rdf_prefixes(prefixes_path):
     prefixes = {}
 
     tree = etree.parse(prefixes_path)
