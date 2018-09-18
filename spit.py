@@ -31,7 +31,7 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
         if resource in prefixes:
             extensions_used.add(resource)
 
-        nodes['http://example-mine.org/ncbi:%s' % args.id] = _type
+        nodes['http://synbiomine.org/ncbi:%s' % args.id] = _type
 
 for extension_used in extensions_used:
     prefix = prefixes[extension_used]
