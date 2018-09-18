@@ -28,18 +28,25 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
         else:
             term = None
 
-        prefix = slurp.rdf_creators.find_rdf_prefix_if_available(term, prefixes)
+        prefix, _ = slurp.rdf_creators.find_rdf_prefix_if_available(term, prefixes)
         if prefix is not None:
             prefixes_used.add(prefix)
 
         nodes[slurp.rdf_creators.create_node_subject(args.id)] = term
 
 for prefix_used in prefixes_used:
-    prefix = prefixes[prefix_used]
-    print('@prefix %s: <%s/> .' % (prefix, prefix_used))
+    print('@prefix %s: <%s/> .' % (prefix_used, prefixes[prefix_used]))
 
 print()
 
 for s, o in nodes.items():
     print('<%s>' % s)
-    print('  a <%s> .' % o)
+
+    prefix, short_term = slurp.rdf_creators.find_rdf_prefix_if_available(o, prefixes)
+
+    if prefix is not None:
+        o = '%s:%s' % (prefix, short_term)
+    else:
+        o = '<%s>' % o
+
+    print('  a %s .' % o)
