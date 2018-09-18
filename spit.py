@@ -40,6 +40,6 @@ for prefix_used in prefixes_used:
 
 print()
 
-for k, v in nodes.items():
-    print('<%s>' % k)
-    print('  a <%s> .' % v)
+for s, o in nodes.items():
+    print('<%s>' % s)
+    print('  a <%s> .' % o)
