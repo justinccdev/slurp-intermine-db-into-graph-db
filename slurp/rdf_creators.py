@@ -1,4 +1,11 @@
 def create_node_subject(_id):
+    """
+    Create the RDF subject.  Currently hard-coded to gene with the ecogene prefix
+
+    :param _id:
+    :return:
+    """
+
     return 'http://synbiomine.org/ecogene:%s' % _id
 
 
