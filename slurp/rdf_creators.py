@@ -40,5 +40,3 @@ def process_class_type(class_type, terms_for_classes, prefixes, prefixes_used):
         prefixes_used.add(prefix)
 
     return term
-
-    subjects[slurp.rdf_creators.create_node_subject(args.id)] = term
