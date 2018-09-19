@@ -17,10 +17,7 @@ def find_rdf_prefix_if_available(term, extensions):
     :return: (relevant_prefix|None, short_part_of_term)
     """
     extension, _, term = term.rpartition('/')
-    if extension in extensions:
-        return extensions[extension], term
-    else:
-        return None, term
+    return extensions.get(extension), term
 
 
 def get_term_for_model_node(node, terms):
