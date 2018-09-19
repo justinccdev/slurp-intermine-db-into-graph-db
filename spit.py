@@ -25,14 +25,26 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
             if key == 'type':
                 slurp.rdf_creators.process_class_type(
                     value, terms_for_classes, prefixes, prefixes_used, subjects, args.id)
+            if key == 'symbol':
+                slurp.rdf_creators.process_symbol(
+                    value, terms_for_classes, prefixes, prefixes_used, subjects, args.id)
 
 for prefix_used in prefixes_used:
     print('@prefix %s: <%s/> .' % (prefix_used, prefixes[prefix_used]))
 
 print()
 
-for s, o in subjects.items():
+for s, po in subjects.items():
+    p, o = po
+
     print('<%s>' % s)
+
+    prefix, short_term = slurp.rdf_creators.find_rdf_prefix_if_available(p, prefixes)
+
+    if prefix is not None:
+        p = '%s:%s' % (prefix, short_term)
+    elif p != 'a':
+        p = '<%s>' % p
 
     prefix, short_term = slurp.rdf_creators.find_rdf_prefix_if_available(o, prefixes)
 
@@ -41,4 +53,4 @@ for s, o in subjects.items():
     else:
         o = '<%s>' % o
 
-    print('  a %s .' % o)
+    print('  %s %s .' % (p, o))

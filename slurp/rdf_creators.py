@@ -57,4 +57,4 @@ def process_class_type(class_type, terms_for_classes, prefixes, prefixes_used, s
     if prefix is not None:
         prefixes_used.add(prefix)
 
-    subjects[create_node_subject(gene_id)] = term
+    subjects[create_node_subject(gene_id)] = ('a', term)
