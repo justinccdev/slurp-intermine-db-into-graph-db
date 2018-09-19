@@ -22,14 +22,15 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
         node = record['n']
 
         for key, value in node.items():
-            print('KEY-VALUE: %s,%s' % (key, value))
+            # print('KEY-VALUE: %s,%s' % (key, value))
 
             if key == 'type':
                 slurp.rdf_creators.process_class_type(
                     value, model_terms, prefixes, prefixes_used, subjects, args.id)
             elif key == 'symbol':
                 slurp.rdf_creators.process_symbol(
-                    '%s.symbol' % node['type'], value, model_terms, prefixes, prefixes_used, subjects, args.id)
+                    '%s.symbol' % node['type'].rpartition('.')[2],
+                    value, model_terms, prefixes, prefixes_used, subjects, args.id)
 
 for prefix_used in prefixes_used:
     print('@prefix %s: <%s/> .' % (prefix_used, prefixes[prefix_used]))
@@ -37,11 +38,19 @@ for prefix_used in prefixes_used:
 print()
 
 for s, po in subjects.items():
-    p, o = po
+    n = 0
+    limit = len(po)
 
     print('<%s>' % s)
 
-    p = slurp.rdf_creators.get_rdf_for_triple_part(p, prefixes)
-    o = slurp.rdf_creators.get_rdf_for_triple_part(o, prefixes)
+    for p, o in po:
+        n += 1
+        p = slurp.rdf_creators.get_rdf_for_triple_part(p, prefixes)
+        o = slurp.rdf_creators.get_rdf_for_triple_part(o, prefixes)
 
-    print('  %s %s .' % (p, o))
+        print('  %s %s ' % (p, o), end='')
+
+        if n < limit:
+            print(';')
+        else:
+            print('.')

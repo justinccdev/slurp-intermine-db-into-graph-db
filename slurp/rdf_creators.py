@@ -54,8 +54,10 @@ def get_rdf_for_triple_part(part, prefixes):
 
     if prefix is not None:
         part = '%s:%s' % (prefix, short_term)
-    elif part != 'a':
+    elif part.startswith('http://'):
         part = '<%s>' % part
+    elif part != 'a':
+        part = '"%s"' % part
 
     return part
 
@@ -79,7 +81,13 @@ def process_class_type(class_type, model_terms, prefixes, prefixes_used, subject
     if prefix is not None:
         prefixes_used.add(prefix)
 
-    subjects[create_node_subject(gene_id)] = ('a', term)
+    subject_name = create_node_subject(gene_id)
+
+    subject = subjects.get(subject_name)
+    if subject is None:
+        subjects[subject_name] = []
+
+    subjects[create_node_subject(gene_id)].append(('a', term))
 
 
 def process_symbol(model_node, symbol, model_terms, prefixes, prefixes_used, subjects, gene_id):
@@ -94,6 +102,7 @@ def process_symbol(model_node, symbol, model_terms, prefixes, prefixes_used, sub
     :param gene_id:
     :return:
     """
+    # print('MODEL NODE %s' % model_node)
     term = get_term_for_model_node(model_node, model_terms)
 
     # print('term for %s is %s' % (model_node, term))
@@ -103,4 +112,10 @@ def process_symbol(model_node, symbol, model_terms, prefixes, prefixes_used, sub
         if prefix is not None:
             prefixes_used.add(prefix)
 
-        subjects[create_node_subject(gene_id)] = (term, symbol)
+        subject_name = create_node_subject(gene_id)
+
+        subject = subjects.get(subject_name)
+        if subject is None:
+            subjects[subject_name] = []
+
+        subjects[subject_name].append((term, symbol))
