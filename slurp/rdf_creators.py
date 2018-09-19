@@ -20,26 +20,6 @@ def find_rdf_prefix(term, extensions):
     return extensions.get(extension), term
 
 
-def get_term_for_model_node(node, terms):
-    """
-    Get the ontology term for an InterMine model node if it's available
-
-    :param node:
-    :param terms:
-    :return: The term string or None if no term
-    """
-    """
-    print('Looking for %s' % node)
-    for term in terms:
-        print('Term %s' % term)
-    """
-
-    if node in terms:
-        return terms[node]
-    else:
-        return None
-
-
 def get_rdf_for_triple_part(part, prefixes):
     """
     Get the RDF for a raw triple part.  Either we need to substitute a prefix, put it in <> or leave it alone
@@ -71,7 +51,7 @@ def process_class_type(class_type, model_terms, prefixes, prefixes_used, subject
     :param gene_id:
     :return:
     """
-    term = get_term_for_model_node(class_type.rpartition('.')[2], model_terms)
+    term = model_terms.get(class_type.rpartition('.')[2])
      # print('Got term %s' % term)
 
     prefix, _ = find_rdf_prefix(term, prefixes)
@@ -100,7 +80,7 @@ def process_symbol(model_node, symbol, model_terms, prefixes, prefixes_used, sub
     :return:
     """
     # print('MODEL NODE %s' % model_node)
-    term = get_term_for_model_node(model_node, model_terms)
+    term = model_terms.get(model_node)
 
     # print('term for %s is %s' % (model_node, term))
 
