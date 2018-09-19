@@ -5,7 +5,6 @@ def create_node_subject(_id):
     :param _id:
     :return:
     """
-
     return 'http://synbiomine.org/ecogene:%s' % _id
 
 
@@ -17,7 +16,6 @@ def find_rdf_prefix_if_available(term, extensions):
     :param extensions: dictionary of extensions to prefixes
     :return: (relevant_prefix|None, short_part_of_term)
     """
-
     extension, _, term = term.rpartition('/')
     if extension in extensions:
         return extensions[extension], term
@@ -37,6 +35,23 @@ def get_term_for_class(class_type, terms_for_classes):
         return terms_for_classes[class_type]
     else:
         return None
+
+
+def get_rdf_for_triple_part(part, prefixes):
+    """
+    Get the RDF for a raw triple part.  Either we need to substitute a prefix, put it in <> or leave it alone
+    :param part:
+    :param prefixes:
+    :return:
+    """
+    prefix, short_term = find_rdf_prefix_if_available(part, prefixes)
+
+    if prefix is not None:
+        part = '%s:%s' % (prefix, short_term)
+    elif part != 'a':
+        part = '<%s>' % part
+
+    return part
 
 
 def process_class_type(class_type, terms_for_classes, prefixes, prefixes_used, subjects, gene_id):

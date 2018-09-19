@@ -39,18 +39,7 @@ for s, po in subjects.items():
 
     print('<%s>' % s)
 
-    prefix, short_term = slurp.rdf_creators.find_rdf_prefix_if_available(p, prefixes)
-
-    if prefix is not None:
-        p = '%s:%s' % (prefix, short_term)
-    elif p != 'a':
-        p = '<%s>' % p
-
-    prefix, short_term = slurp.rdf_creators.find_rdf_prefix_if_available(o, prefixes)
-
-    if prefix is not None:
-        o = '%s:%s' % (prefix, short_term)
-    else:
-        o = '<%s>' % o
+    p = slurp.rdf_creators.get_rdf_for_triple_part(p, prefixes)
+    o = slurp.rdf_creators.get_rdf_for_triple_part(o, prefixes)
 
     print('  %s %s .' % (p, o))
