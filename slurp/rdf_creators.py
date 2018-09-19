@@ -8,7 +8,7 @@ def create_node_subject(_id):
     return 'http://synbiomine.org/ecogene:%s' % _id
 
 
-def find_rdf_prefix_if_available(term, extensions):
+def find_rdf_prefix(term, extensions):
     """
     If the term has a known rdf prefix then return it
 
@@ -47,7 +47,7 @@ def get_rdf_for_triple_part(part, prefixes):
     :param prefixes:
     :return:
     """
-    prefix, short_term = find_rdf_prefix_if_available(part, prefixes)
+    prefix, short_term = find_rdf_prefix(part, prefixes)
 
     if prefix is not None:
         part = '%s:%s' % (prefix, short_term)
@@ -74,7 +74,7 @@ def process_class_type(class_type, model_terms, prefixes, prefixes_used, subject
     term = get_term_for_model_node(class_type.rpartition('.')[2], model_terms)
      # print('Got term %s' % term)
 
-    prefix, _ = find_rdf_prefix_if_available(term, prefixes)
+    prefix, _ = find_rdf_prefix(term, prefixes)
     if prefix is not None:
         prefixes_used.add(prefix)
 
@@ -105,7 +105,7 @@ def process_symbol(model_node, symbol, model_terms, prefixes, prefixes_used, sub
     # print('term for %s is %s' % (model_node, term))
 
     if term is not None:
-        prefix, _ = find_rdf_prefix_if_available(term, prefixes)
+        prefix, _ = find_rdf_prefix(term, prefixes)
         if prefix is not None:
             prefixes_used.add(prefix)
 
