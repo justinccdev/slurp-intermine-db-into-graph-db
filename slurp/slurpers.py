@@ -1,5 +1,5 @@
 def get_im_genes(curs):
-    curs.execute("SELECT id, primaryidentifier, secondaryidentifier, organismid, class FROM gene LIMIT 5")
+    curs.execute("SELECT id, primaryidentifier, secondaryidentifier, symbol, organismid, class FROM gene LIMIT 5")
 
     _genes = {}
 
@@ -10,6 +10,7 @@ def get_im_genes(curs):
             'external_primary_id': row['secondaryidentifier'],
             'internal_organism_id': row['organismid'],
             'name': row['primaryidentifier'],
+            'symbol' : row['symbol'],
             'type': row['class']
         }
 

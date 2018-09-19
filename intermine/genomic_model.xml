@@ -680,7 +680,7 @@
 	<attribute name="name" type="java.lang.String"/>
 </class>
 <class name="BioEntity" is-interface="true">
-	<attribute name="symbol" type="java.lang.String"/>
+	<attribute name="symbol" type="java.lang.String" term="http://purl.obolibrary.org/obo/IAO_0000028"/>
 	<attribute name="name" type="java.lang.String"/>
 	<attribute name="primaryIdentifier" type="java.lang.String"/>
 	<attribute name="secondaryIdentifier" type="java.lang.String"/>

@@ -23,16 +23,22 @@ def find_rdf_prefix_if_available(term, extensions):
         return None, term
 
 
-def get_term_for_class(class_type, terms_for_classes):
+def get_term_for_model_node(node, terms):
     """
-    Get the ontology term for a class if it's available.
+    Get the ontology term for an InterMine model node if it's available
 
-    :param class_type:
-    :param terms_for_classes:
+    :param node:
+    :param terms:
     :return: The term string or None if no term
     """
-    if class_type in terms_for_classes:
-        return terms_for_classes[class_type]
+    """
+    print('Looking for %s' % node)
+    for term in terms:
+        print('Term %s' % term)
+    """
+
+    if node in terms:
+        return terms[node]
     else:
         return None
 
@@ -54,11 +60,33 @@ def get_rdf_for_triple_part(part, prefixes):
     return part
 
 
-def process_class_type(class_type, terms_for_classes, prefixes, prefixes_used, subjects, gene_id):
+def process_class_type(class_type, model_terms, prefixes, prefixes_used, subjects, gene_id):
     """
     Process the graph node type into something we can use to generate RDF.
 
     :param class_type:
+    :param model_terms:
+    :param prefixes:
+    :param prefixes_used:
+    :param subjects:
+    :param gene_id:
+    :return:
+    """
+    term = get_term_for_model_node(class_type.rpartition('.')[2], model_terms)
+     # print('Got term %s' % term)
+
+    prefix, _ = find_rdf_prefix_if_available(term, prefixes)
+    if prefix is not None:
+        prefixes_used.add(prefix)
+
+    subjects[create_node_subject(gene_id)] = ('a', term)
+
+
+def process_symbol(model_node, symbol, model_terms, prefixes, prefixes_used, subjects, gene_id):
+    """
+    Process a symbol graph node property into something we can use to generate RDF.
+
+    :param symbol:
     :param terms_for_classes:
     :param prefixes:
     :param prefixes_used:
@@ -66,10 +94,13 @@ def process_class_type(class_type, terms_for_classes, prefixes, prefixes_used, s
     :param gene_id:
     :return:
     """
-    term = get_term_for_class(class_type, terms_for_classes)
+    term = get_term_for_model_node(model_node, model_terms)
 
-    prefix, _ = find_rdf_prefix_if_available(term, prefixes)
-    if prefix is not None:
-        prefixes_used.add(prefix)
+    # print('term for %s is %s' % (model_node, term))
 
-    subjects[create_node_subject(gene_id)] = ('a', term)
+    if term is not None:
+        prefix, _ = find_rdf_prefix_if_available(term, prefixes)
+        if prefix is not None:
+            prefixes_used.add(prefix)
+
+        subjects[create_node_subject(gene_id)] = (term, symbol)

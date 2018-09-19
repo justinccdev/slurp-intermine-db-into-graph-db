@@ -11,7 +11,7 @@ parser.add_argument('id', help='Gene ID')
 args = parser.parse_args()
 
 prefixes = slurp.spitters.load_rdf_prefixes('config/rdf-prefixes.xml')
-terms_for_classes = slurp.spitters.load_terms('intermine/genomic_model.xml')
+model_terms = slurp.spitters.load_terms('intermine/genomic_model.xml')
 prefixes_used = set()
 subjects = {}
 
@@ -22,12 +22,14 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
         node = record['n']
 
         for key, value in node.items():
+            print('KEY-VALUE: %s,%s' % (key, value))
+
             if key == 'type':
                 slurp.rdf_creators.process_class_type(
-                    value, terms_for_classes, prefixes, prefixes_used, subjects, args.id)
-            if key == 'symbol':
+                    value, model_terms, prefixes, prefixes_used, subjects, args.id)
+            elif key == 'symbol':
                 slurp.rdf_creators.process_symbol(
-                    value, terms_for_classes, prefixes, prefixes_used, subjects, args.id)
+                    '%s.symbol' % node['type'], value, model_terms, prefixes, prefixes_used, subjects, args.id)
 
 for prefix_used in prefixes_used:
     print('@prefix %s: <%s/> .' % (prefix_used, prefixes[prefix_used]))
