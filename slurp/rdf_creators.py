@@ -32,11 +32,22 @@ def get_term_for_class(class_type, terms_for_classes):
         return None
 
 
-def process_class_type(class_type, terms_for_classes, prefixes, prefixes_used):
+def process_class_type(class_type, terms_for_classes, prefixes, prefixes_used, subjects, gene_id):
+    """
+    Process the graph node type into something we can use to generate RDF.
+
+    :param class_type:
+    :param terms_for_classes:
+    :param prefixes:
+    :param prefixes_used:
+    :param subjects:
+    :param gene_id:
+    :return:
+    """
     term = get_term_for_class(class_type, terms_for_classes)
 
     prefix, _ = find_rdf_prefix_if_available(term, prefixes)
     if prefix is not None:
         prefixes_used.add(prefix)
 
-    return term
+    subjects[create_node_subject(gene_id)] = term
