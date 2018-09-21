@@ -3,15 +3,15 @@
 import argparse
 
 import neo4j.v1
-import slurp.rdf_creators
-import slurp.spitters
+import sas.rdf_creators
+import sas.spitters
 
 parser = argparse.ArgumentParser('Spit out RDF for a given gene ID (try EG11277)')
 parser.add_argument('id', help='Gene ID')
 args = parser.parse_args()
 
-prefixes = slurp.spitters.load_rdf_prefixes('config/rdf-prefixes.xml')
-model_terms = slurp.spitters.load_terms('intermine/genomic_model.xml')
+prefixes = sas.spitters.load_rdf_prefixes('config/rdf-prefixes.xml')
+model_terms = sas.spitters.load_terms('intermine/genomic_model.xml')
 prefixes_used = set()
 subjects = {}
 
@@ -21,7 +21,7 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
         record = result.single()
         node = record['n']
 
-        subject_name = slurp.rdf_creators.create_node_subject(args.id)
+        subject_name = sas.rdf_creators.create_node_subject(args.id)
         pos = []
         subjects[subject_name] = pos
 
@@ -39,7 +39,7 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
                 p, o = term, value
 
             if term is not None:
-                prefix, _ = slurp.rdf_creators.find_rdf_prefix(term, prefixes)
+                prefix, _ = sas.rdf_creators.find_rdf_prefix(term, prefixes)
                 if prefix is not None:
                     prefixes_used.add(prefix)
 
@@ -58,8 +58,8 @@ for s, po in subjects.items():
 
     for p, o in po:
         n += 1
-        p = slurp.rdf_creators.get_rdf_for_triple_part(p, prefixes)
-        o = slurp.rdf_creators.get_rdf_for_triple_part(o, prefixes)
+        p = sas.rdf_creators.get_rdf_for_triple_part(p, prefixes)
+        o = sas.rdf_creators.get_rdf_for_triple_part(o, prefixes)
 
         print('  %s %s ' % (p, o), end='')
 
