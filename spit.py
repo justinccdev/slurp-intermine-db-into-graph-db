@@ -35,8 +35,8 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
                 term = model_terms.get(node_type)
                 p, o = 'a', term
 
-            elif key == 'symbol':
-                term = model_terms.get('%s.symbol' % node_type)
+            else:
+                term = model_terms.get('%s.%s' % (node_type, key))
                 p, o = term, value
 
             if term is not None:
