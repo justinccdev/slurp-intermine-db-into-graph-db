@@ -11,7 +11,8 @@ def get_im_genes(curs):
             'internal_organism_id': row['organismid'],
             'name': row['primaryidentifier'],
             'type': row['class'],
-            'symbol' : row['symbol']
+            'symbol': row['symbol'],
+            'description': row['description']
         }
 
     return _genes

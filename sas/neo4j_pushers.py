@@ -2,8 +2,13 @@ def add_genes(session, genes):
     for im_id, gene in genes.items():
         print(gene)
         session.run(
-            "CREATE (:gene { im_id:'%s', id:'%s', name: '%s', symbol: '%s', type:'%s' })"
-            % (im_id, gene['external_primary_id'], gene['external_primary_id'], gene['symbol'], gene['type']))
+            "CREATE (:gene { im_id:'%s', id:'%s', name: '%s', symbol: '%s', type:'%s', description:'%s' })"
+            % (im_id,
+               gene['external_primary_id'],
+               gene['external_primary_id'],
+               gene['symbol'],
+               gene['type'],
+               gene['description']))
 
 
 def add_organisms(session, organisms):

@@ -491,7 +491,7 @@
 </class>
 <class name="Gene" extends="SequenceFeature" is-interface="true" term="http://semanticscience.org/resource/SIO_010035">
 	<attribute name="briefDescription" type="java.lang.String"/>
-	<attribute name="description" type="java.lang.String"/>
+	<attribute name="description" type="java.lang.String" term="http://semanticscience.org/resource/SIO_000136"/>
 	<reference name="upstreamIntergenicRegion" referenced-type="IntergenicRegion"/>
 	<reference name="downstreamIntergenicRegion" referenced-type="IntergenicRegion"/>
 	<collection name="flankingRegions" referenced-type="GeneFlankingRegion" reverse-reference="gene"/>
