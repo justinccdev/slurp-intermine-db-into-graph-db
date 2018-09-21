@@ -21,6 +21,8 @@ def add_genes(session, genes):
 def add_organisms(session, organisms):
     for im_id, organism in organisms.items():
         print(organism)
+
+        # TODO: Can genericise the code in add_genes() when we want to tidy this up
         session.run(
             "CREATE (:organism { im_id:'%s', id:'%s', name: '%s', type:'%s' })"
             % (im_id, organism['external_primary_id'], organism['name'], organism['type']))
