@@ -6,7 +6,7 @@ def load_fair_prefixes(prefixes_path):
 
     tree = etree.parse(prefixes_path)
     for prefix in tree.xpath('//prefix'):
-        prefixes[prefix.attrib['class']] = prefix.attrib['prefix']
+        prefixes[prefix.attrib['type']] = prefix.attrib['prefix']
 
     return prefixes
 

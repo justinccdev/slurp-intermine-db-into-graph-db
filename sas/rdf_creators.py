@@ -1,11 +1,14 @@
-def create_node_subject(_id):
+def create_node_subject(node, fair_prefixes):
     """
     Create the RDF subject.  Currently hard-coded to gene with the ecogene prefix
 
-    :param _id:
+    :param node
+    :param fair_prefixes
     :return:
     """
-    return 'http://synbiomine.org/ecogene:%s' % _id
+    prefix = fair_prefixes.get(node['type'], 'unknown')
+
+    return 'http://synbiomine.org/%s:%s' % (prefix, node['id'])
 
 
 def find_rdf_prefix(term, extensions):

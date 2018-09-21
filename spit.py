@@ -12,8 +12,10 @@ parser = argparse.ArgumentParser('Spit out RDF for a given gene ID (try EG11277)
 parser.add_argument('id', help='Gene ID')
 args = parser.parse_args()
 
-prefixes = sas.loaders.load_rdf_prefixes('config/rdf-prefixes.xml')
+fair_prefixes = sas.loaders.load_fair_prefixes('config/fair-prefixes.xml')
+rdf_prefixes = sas.loaders.load_rdf_prefixes('config/rdf-prefixes.xml')
 model_terms = sas.intermine_model_loaders.load_terms('intermine/genomic_model.xml')
+
 prefixes_used = set()
 subjects = {}
 
@@ -23,7 +25,7 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
         record = result.single()
         node = record['n']
 
-        subject_name = sas.rdf_creators.create_node_subject(args.id)
+        subject_name = sas.rdf_creators.create_node_subject(node, fair_prefixes)
         pos = []
         subjects[subject_name] = pos
 
@@ -41,10 +43,10 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
                 p, o = term, value
 
             if term is not None:
-                prefix, _ = sas.rdf_creators.find_rdf_prefix(term, prefixes)
+                prefix, _ = sas.rdf_creators.find_rdf_prefix(term, rdf_prefixes)
                 if prefix is not None:
                     prefixes_used.add(prefix)
 
                 pos.append((p, o))
 
-print(sas.rdf_creators.create_rdf_output(prefixes, prefixes_used, subjects), end='')
+print(sas.rdf_creators.create_rdf_output(rdf_prefixes, prefixes_used, subjects), end='')
