@@ -21,11 +21,11 @@ subjects = {}
 
 with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'passw0rd')) as driver:
     with driver.session() as session:
-        result = session.run("match (n {id:'%s'}) return n" % args.id)
+        result = session.run("MATCH (n {id:'%s'}) RETURN n" % args.id)
         record = result.single()
         node = record['n']
 
-        subject_name = sas.rdf_creators.create_node_subject(node, fair_prefixes)
+        subject_name = sas.rdf_creators.create_node_fair_uri(node, fair_prefixes)
         pos = []
         subjects[subject_name] = pos
 
@@ -40,6 +40,7 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
                 p, o = 'a', term
             else:
                 term = model_terms.get('%s.%s' % (node_type, key))
+
                 p, o = term, value
 
             if term is not None:
@@ -48,5 +49,21 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
                     prefixes_used.add(prefix)
 
                 pos.append((p, o))
+
+        # look for relationships
+        result = session.run("MATCH (g:gene {id:'%s'})-[r]-(b) RETURN type(r), b" % args.id)
+
+        for record in result:
+            predicate = record['type(r)']
+            term = model_terms.get('%s.%s' % (node_type, predicate))
+
+            if term is not None:
+                prefix, _ = sas.rdf_creators.find_rdf_prefix(term, rdf_prefixes)
+                if prefix is not None:
+                    prefixes_used.add(prefix)
+
+                object_name = sas.rdf_creators.create_node_fair_uri(record['b'], fair_prefixes)
+
+                pos.append((term, object_name))
 
 print(sas.rdf_creators.create_rdf_output(rdf_prefixes, prefixes_used, subjects), end='')

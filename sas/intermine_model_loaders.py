@@ -55,7 +55,7 @@ def load_terms(model_path):
             # model_terms[model_class] = attrib['term']
             model_terms[class_name] = attrib['term']
 
-        for _property in xml_tree.xpath("//class[@name='%s']/attribute" % class_name):
+        for _property in xml_tree.xpath("//class[@name='%s']/*" % class_name):
             attrib = _property.attrib
 
             if 'term' in attrib:

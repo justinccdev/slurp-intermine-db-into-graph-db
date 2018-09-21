@@ -1,4 +1,4 @@
-def create_node_subject(node, fair_prefixes):
+def create_node_fair_uri(node, fair_prefixes):
     """
     Create the RDF subject.  Currently hard-coded to gene with the ecogene prefix
 
