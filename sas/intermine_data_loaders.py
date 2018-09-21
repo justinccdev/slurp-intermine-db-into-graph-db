@@ -10,8 +10,8 @@ def get_im_genes(curs):
             'external_primary_id': row['secondaryidentifier'],
             'internal_organism_id': row['organismid'],
             'name': row['primaryidentifier'],
-            'symbol' : row['symbol'],
-            'type': row['class']
+            'type': row['class'],
+            'symbol' : row['symbol']
         }
 
     return _genes
