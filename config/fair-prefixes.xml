@@ -1,0 +1,3 @@
+<prefixes>
+    <prefix type="org.intermine.model.bio.Gene" prefix="ecogene"/>
+</prefixes>
