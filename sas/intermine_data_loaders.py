@@ -4,20 +4,21 @@ def get_im_genes(curs):
     _map = {
         # This is a hack because the primary identifier is not an accession number and the actual ncbigene ID is
         # not captured by Synbiomine
-        'secondaryidentifier':'external_primary_id',
+        'secondaryidentifier':'id',
         'organismid':'internal_organism_id',
         'primaryidentifier':'name',
         'class':'type',
-        'id':None
+        'id':'im_id'
     }
 
     genes = {}
 
     for row in curs:
         gene = {}
+        print(row)
 
-        for k, v in row.iteritems():
-            if k in map:
+        for k, v in row.items():
+            if k in _map:
                 k = _map[k]
 
             if k is not None:

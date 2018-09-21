@@ -1,14 +1,21 @@
 def add_genes(session, genes):
     for im_id, gene in genes.items():
         print(gene)
-        session.run(
-            "CREATE (:gene { im_id:'%s', id:'%s', name: '%s', symbol: '%s', type:'%s', description:'%s' })"
-            % (im_id,
-               gene['external_primary_id'],
-               gene['external_primary_id'],
-               gene['symbol'],
-               gene['type'],
-               gene['description']))
+
+        command = 'CREATE (:gene {'
+
+        count = 0
+        limit = len(gene)
+        for k, v in gene.items():
+            count += 1
+            command += " %s:'%s'" % (k, v)
+
+            if count < limit:
+                command += ','
+
+        command += ' })'
+
+        session.run(command)
 
 
 def add_organisms(session, organisms):
