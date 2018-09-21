@@ -31,24 +31,7 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
 
         node_type = node['type'].rpartition('.')[2]
 
-        for key, value in node.items():
-            # print('KEY-VALUE: %s,%s' % (key, value))
-            term = p = o = None
-
-            if key == 'type':
-                term = model_terms.get(node_type)
-                p, o = 'a', term
-            else:
-                term = model_terms.get('%s.%s' % (node_type, key))
-
-                p, o = term, value
-
-            if term is not None:
-                prefix, _ = sas.rdf_creators.find_rdf_prefix(term, rdf_prefixes)
-                if prefix is not None:
-                    prefixes_used.add(prefix)
-
-                pos.append((p, o))
+        sas.rdf_creators.process_node_properties(node, node_type, model_terms, rdf_prefixes, prefixes_used, pos)
 
         # look for relationships
         result = session.run("MATCH (g:gene {id:'%s'})-[r]-(b) RETURN type(r), b" % args.id)
@@ -63,7 +46,6 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
                     prefixes_used.add(prefix)
 
                 object_name = sas.rdf_creators.create_node_fair_uri(record['b'], fair_prefixes)
-
                 pos.append((term, object_name))
 
 print(sas.rdf_creators.create_rdf_output(rdf_prefixes, prefixes_used, subjects), end='')

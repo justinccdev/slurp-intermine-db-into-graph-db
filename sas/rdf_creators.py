@@ -42,6 +42,37 @@ def get_rdf_for_triple_part(part, prefixes):
     return part
 
 
+def process_node_properties(node, node_type, model_terms, rdf_prefixes, prefixes_used, pos):
+    """
+    Process the properties of a graph node
+    :param node:
+    :param node_type:
+    :param model_terms:
+    :param rdf_prefixes:
+    :param prefixes_used:
+    :param pos:
+    :return:
+    """
+    for key, value in node.items():
+        # print('KEY-VALUE: %s,%s' % (key, value))
+        term = p = o = None
+
+        if key == 'type':
+            term = model_terms.get(node_type)
+            p, o = 'a', term
+        else:
+            term = model_terms.get('%s.%s' % (node_type, key))
+
+            p, o = term, value
+
+        if term is not None:
+            prefix, _ = find_rdf_prefix(term, rdf_prefixes)
+            if prefix is not None:
+                prefixes_used.add(prefix)
+
+            pos.append((p, o))
+
+
 def create_rdf_output(prefixes, prefixes_used, subjects):
     """
     Create the final rdf output
