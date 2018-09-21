@@ -1,5 +1,5 @@
 def get_im_genes(curs):
-    curs.execute("SELECT id, primaryidentifier, secondaryidentifier, symbol, organismid, class FROM gene LIMIT 5")
+    curs.execute("SELECT * FROM gene LIMIT 5")
 
     _genes = {}
 
@@ -18,7 +18,7 @@ def get_im_genes(curs):
 
 
 def get_im_organisms(_curs):
-    _curs.execute("SELECT id, taxonid, name, class FROM organism")
+    _curs.execute("SELECT * FROM organism")
 
     organisms = {}
 
