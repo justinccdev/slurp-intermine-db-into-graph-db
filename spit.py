@@ -25,16 +25,18 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
         pos = []
         subjects[subject_name] = pos
 
+        node_type = node['type'].rpartition('.')[2]
+
         for key, value in node.items():
             # print('KEY-VALUE: %s,%s' % (key, value))
             term = p = o = None
 
             if key == 'type':
-                term = model_terms.get(value.rpartition('.')[2])
+                term = model_terms.get(node_type)
                 p, o = 'a', term
 
             elif key == 'symbol':
-                term = model_terms.get('%s.symbol' % node['type'].rpartition('.')[2])
+                term = model_terms.get('%s.symbol' % node_type)
                 p, o = term, value
 
             if term is not None:
