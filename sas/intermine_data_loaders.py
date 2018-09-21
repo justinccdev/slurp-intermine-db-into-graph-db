@@ -11,7 +11,7 @@ def get_im_genes(curs):
         'id':None
     }
 
-    _genes = {}
+    genes = {}
 
     for row in curs:
         gene = {}
@@ -23,17 +23,17 @@ def get_im_genes(curs):
             if k is not None:
                 gene[k] = v
 
-        _genes[row['id']] = gene
+        genes[row['id']] = gene
 
-    return _genes
+    return genes
 
 
-def get_im_organisms(_curs):
-    _curs.execute("SELECT * FROM organism")
+def get_im_organisms(curs):
+    curs.execute("SELECT * FROM organism")
 
     organisms = {}
 
-    for row in _curs:
+    for row in curs:
         organisms[row['id']] = {
             'external_primary_id': row['taxonid'],
             'name': row['name'],
