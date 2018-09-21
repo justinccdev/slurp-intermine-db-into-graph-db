@@ -1,6 +1,4 @@
 def get_im_genes(curs):
-    curs.execute("SELECT * FROM gene")
-
     _map = {
         # This is a hack because the primary identifier is not an accession number and the actual ncbigene ID is
         # not captured by Synbiomine
@@ -11,10 +9,26 @@ def get_im_genes(curs):
         'id':'im_id'
     }
 
-    genes = {}
+    return map_rows_to_dicts(curs, 'gene', _map)
+
+
+def get_im_organisms(curs):
+    _map = {
+        'taxonid':'id',
+        'class':'type',
+        'id':'im_id'
+    }
+
+    return map_rows_to_dicts(curs, 'organism', _map)
+
+
+def map_rows_to_dicts(curs, _type, _map):
+    entities = {}
+
+    curs.execute('SELECT * FROM %s' % _type)
 
     for row in curs:
-        gene = {}
+        entity = {}
         print(row)
 
         for k, v in row.items():
@@ -22,24 +36,8 @@ def get_im_genes(curs):
                 k = _map[k]
 
             if k is not None:
-                gene[k] = v
+                entity[k] = v
 
-        genes[row['id']] = gene
+        entities[row['id']] = entity
 
-    return genes
-
-
-def get_im_organisms(curs):
-    curs.execute("SELECT * FROM organism")
-
-    organisms = {}
-
-    for row in curs:
-        organisms[row['id']] = {
-            'id': row['taxonid'],
-            'im_id': row['id'],
-            'name': row['name'],
-            'type': row['class']
-        }
-
-    return organisms
+    return entities
