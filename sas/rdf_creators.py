@@ -55,7 +55,6 @@ def process_node_properties(node, node_type, model_terms, rdf_prefixes, prefixes
     """
     for key, value in node.items():
         # print('KEY-VALUE: %s,%s' % (key, value))
-        term = p = o = None
 
         if key == 'type':
             term = model_terms.get(node_type)
@@ -71,6 +70,31 @@ def process_node_properties(node, node_type, model_terms, rdf_prefixes, prefixes
                 prefixes_used.add(prefix)
 
             pos.append((p, o))
+
+
+def process_node_relationships(relationships, node_type, model_terms, rdf_prefixes, prefixes_used, fair_prefixes, pos):
+    """
+    Process the relationships of a graph node
+    :param relationships:
+    :param node_type:
+    :param model_terms:
+    :param rdf_prefixes:
+    :param prefixes_used:
+    :param fair_prefixes:
+    :param pos:
+    :return:
+    """
+    for record in relationships:
+        predicate = record['type(r)']
+        term = model_terms.get('%s.%s' % (node_type, predicate))
+
+        if term is not None:
+            prefix, _ = find_rdf_prefix(term, rdf_prefixes)
+            if prefix is not None:
+                prefixes_used.add(prefix)
+
+            object_name = create_node_fair_uri(record['b'], fair_prefixes)
+            pos.append((term, object_name))
 
 
 def create_rdf_output(prefixes, prefixes_used, subjects):

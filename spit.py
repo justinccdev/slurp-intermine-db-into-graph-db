@@ -36,16 +36,7 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
         # look for relationships
         result = session.run("MATCH (g:gene {id:'%s'})-[r]-(b) RETURN type(r), b" % args.id)
 
-        for record in result:
-            predicate = record['type(r)']
-            term = model_terms.get('%s.%s' % (node_type, predicate))
-
-            if term is not None:
-                prefix, _ = sas.rdf_creators.find_rdf_prefix(term, rdf_prefixes)
-                if prefix is not None:
-                    prefixes_used.add(prefix)
-
-                object_name = sas.rdf_creators.create_node_fair_uri(record['b'], fair_prefixes)
-                pos.append((term, object_name))
+        sas.rdf_creators.process_node_relationships(
+            result, node_type, model_terms, rdf_prefixes, prefixes_used, fair_prefixes, pos)
 
 print(sas.rdf_creators.create_rdf_output(rdf_prefixes, prefixes_used, subjects), end='')
