@@ -21,16 +21,20 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
         record = result.single()
         node = record['n']
 
+        subject_name = slurp.rdf_creators.create_node_subject(args.id)
+        pos = []
+        subjects[subject_name] = pos
+
         for key, value in node.items():
             # print('KEY-VALUE: %s,%s' % (key, value))
 
             if key == 'type':
                 slurp.rdf_creators.process_class_type(
-                    value, model_terms, prefixes, prefixes_used, subjects, args.id)
+                    value, model_terms, prefixes, prefixes_used, pos)
             elif key == 'symbol':
                 slurp.rdf_creators.process_symbol(
                     '%s.symbol' % node['type'].rpartition('.')[2],
-                    value, model_terms, prefixes, prefixes_used, subjects, args.id)
+                    value, model_terms, prefixes, prefixes_used, pos)
 
 for prefix_used in prefixes_used:
     print('@prefix %s: <%s/> .' % (prefix_used, prefixes[prefix_used]))

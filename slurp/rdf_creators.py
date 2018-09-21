@@ -39,7 +39,7 @@ def get_rdf_for_triple_part(part, prefixes):
     return part
 
 
-def process_class_type(class_type, model_terms, prefixes, prefixes_used, subjects, gene_id):
+def process_class_type(class_type, model_terms, prefixes, prefixes_used, subject):
     """
     Process the graph node type into something we can use to generate RDF.
 
@@ -48,26 +48,20 @@ def process_class_type(class_type, model_terms, prefixes, prefixes_used, subject
     :param prefixes:
     :param prefixes_used:
     :param subjects:
-    :param gene_id:
     :return:
     """
     term = model_terms.get(class_type.rpartition('.')[2])
      # print('Got term %s' % term)
 
-    prefix, _ = find_rdf_prefix(term, prefixes)
-    if prefix is not None:
-        prefixes_used.add(prefix)
+    if term is not None:
+        prefix, _ = find_rdf_prefix(term, prefixes)
+        if prefix is not None:
+            prefixes_used.add(prefix)
 
-    subject_name = create_node_subject(gene_id)
-
-    subject = subjects.get(subject_name)
-    if subject is None:
-        subjects[subject_name] = []
-
-    subjects[create_node_subject(gene_id)].append(('a', term))
+        subject.append(('a', term))
 
 
-def process_symbol(model_node, symbol, model_terms, prefixes, prefixes_used, subjects, gene_id):
+def process_symbol(model_node, symbol, model_terms, prefixes, prefixes_used, subject):
     """
     Process a symbol graph node property into something we can use to generate RDF.
 
@@ -89,10 +83,4 @@ def process_symbol(model_node, symbol, model_terms, prefixes, prefixes_used, sub
         if prefix is not None:
             prefixes_used.add(prefix)
 
-        subject_name = create_node_subject(gene_id)
-
-        subject = subjects.get(subject_name)
-        if subject is None:
-            subjects[subject_name] = []
-
-        subjects[subject_name].append((term, symbol))
+        subject.append((term, symbol))
