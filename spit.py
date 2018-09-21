@@ -47,7 +47,7 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
 
                 pos.append((p, o))
 
-for prefix_used in prefixes_used:
+for prefix_used in sorted(prefixes_used):
     print('@prefix %s: <%s/> .' % (prefix_used, prefixes[prefix_used]))
 
 print()
