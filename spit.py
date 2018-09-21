@@ -27,14 +27,22 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
 
         for key, value in node.items():
             # print('KEY-VALUE: %s,%s' % (key, value))
+            term = p = o = None
 
             if key == 'type':
-                slurp.rdf_creators.process_class_type(
-                    value, model_terms, prefixes, prefixes_used, pos)
+                term = model_terms.get(value.rpartition('.')[2])
+                p, o = 'a', term
+
             elif key == 'symbol':
-                slurp.rdf_creators.process_symbol(
-                    '%s.symbol' % node['type'].rpartition('.')[2],
-                    value, model_terms, prefixes, prefixes_used, pos)
+                term = model_terms.get('%s.symbol' % node['type'].rpartition('.')[2])
+                p, o = term, value
+
+            if term is not None:
+                prefix, _ = slurp.rdf_creators.find_rdf_prefix(term, prefixes)
+                if prefix is not None:
+                    prefixes_used.add(prefix)
+
+                pos.append((p, o))
 
 for prefix_used in prefixes_used:
     print('@prefix %s: <%s/> .' % (prefix_used, prefixes[prefix_used]))
