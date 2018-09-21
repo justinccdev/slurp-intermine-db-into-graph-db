@@ -245,7 +245,7 @@
 	<collection name="cDNAClones" referenced-type="CDNAClone" reverse-reference="MRNA"/>
 </class>
 <class name="SequenceFeature" extends="BioEntity" is-interface="true">
-	<attribute name="score" type="java.lang.Double"/>
+	<attribute name="score" type="java.lang.Double" term="http://edamontology.org/data_1249"/>
 	<attribute name="scoreType" type="java.lang.String"/>
 	<attribute name="length" type="java.lang.Integer"/>
 	<attribute name="cytoLocation" type="java.lang.String"/>

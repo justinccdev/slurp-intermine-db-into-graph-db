@@ -1,4 +1,5 @@
 <prefixes>
+  <prefix prefix="edam" extension="http://edamontology.org"/>
   <prefix prefix="iao" extension="http://purl.obolibrary.org/obo"/>
   <prefix prefix="sio" extension="http://semanticscience.org/resource"/>
 </prefixes>
