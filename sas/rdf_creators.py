@@ -37,3 +37,41 @@ def get_rdf_for_triple_part(part, prefixes):
         part = '"%s"' % part
 
     return part
+
+
+def create_rdf_output(prefixes, prefixes_used, subjects):
+    """
+    Create the final rdf output
+    :param prefixes:
+    :param prefixes_used:
+    :param subjects:
+    :return:
+    """
+    output = ''
+
+    for prefix_used in sorted(prefixes_used):
+        output += '@prefix %s: <%s/> .\n' % (prefix_used, prefixes[prefix_used])
+
+    output += '\n'
+
+    for s, po in subjects.items():
+        n = 0
+        limit = len(po)
+
+        output += '<%s>\n' % s
+
+        for p, o in po:
+            n += 1
+            p = get_rdf_for_triple_part(p, prefixes)
+            o = get_rdf_for_triple_part(o, prefixes)
+
+            output += '  %s %s ' % (p, o)
+
+            if n < limit:
+                output += ';'
+            else:
+                output += '.'
+
+            output += '\n'
+
+    return output

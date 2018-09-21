@@ -47,25 +47,4 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
 
                 pos.append((p, o))
 
-for prefix_used in sorted(prefixes_used):
-    print('@prefix %s: <%s/> .' % (prefix_used, prefixes[prefix_used]))
-
-print()
-
-for s, po in subjects.items():
-    n = 0
-    limit = len(po)
-
-    print('<%s>' % s)
-
-    for p, o in po:
-        n += 1
-        p = sas.rdf_creators.get_rdf_for_triple_part(p, prefixes)
-        o = sas.rdf_creators.get_rdf_for_triple_part(o, prefixes)
-
-        print('  %s %s ' % (p, o), end='')
-
-        if n < limit:
-            print(';')
-        else:
-            print('.')
+print(sas.rdf_creators.create_rdf_output(prefixes, prefixes_used, subjects), end='')
