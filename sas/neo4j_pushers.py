@@ -1,12 +1,19 @@
-def add_genes(session, genes):
-    for im_id, gene in genes.items():
-        print(gene)
+def add_entities(session, type, entities):
+    """
+    Add entities
+    :param session:
+    :param type:
+    :param entities:
+    :return:
+    """
+    for im_id, entity in entities.items():
+        print(entity)
 
-        command = 'CREATE (:gene {'
+        command = 'CREATE (:%s {' % type
 
         count = 0
-        limit = len(gene)
-        for k, v in gene.items():
+        limit = len(entity)
+        for k, v in entity.items():
             count += 1
             command += " %s:'%s'" % (k, v)
 
@@ -17,19 +24,14 @@ def add_genes(session, genes):
 
         session.run(command)
 
-
-def add_organisms(session, organisms):
-    for im_id, organism in organisms.items():
-        print(organism)
-
-        # TODO: Can genericise the code in add_genes() when we want to tidy this up
-        session.run(
-            "CREATE (:organism { im_id:'%s', id:'%s', name: '%s', type:'%s' })"
-            % (im_id, organism['external_primary_id'], organism['name'], organism['type']))
-
-
 def add_relationships(session, genes):
+    """
+    Add relationships between entities
+    :param session:
+    :param genes:
+    :return:
+    """
     for im_id, gene in genes.items():
         session.run(
-            "MATCH (g:gene {im_id:'%s'}), (o:organism {im_id:'%s'}) CREATE (g)-[:IN_GENOME_OF]->(o)"
+            "MATCH (g:gene {im_id:'%s'}), (o:organism {im_id:'%s'}) CREATE (g)-[:organism]->(o)"
             % (im_id, gene['internal_organism_id']))

@@ -11,6 +11,6 @@ with psycopg2.connect(dbname='synbiomine-v6', user='justincc', cursor_factory=ps
         with driver.session() as session:
             with conn.cursor() as curs:
                 genes = sas.intermine_data_loaders.get_im_genes(curs)
-                sas.neo4j_pushers.add_genes(session, genes)
-                sas.neo4j_pushers.add_organisms(session, sas.intermine_data_loaders.get_im_organisms(curs))
+                sas.neo4j_pushers.add_entities(session, 'gene', genes)
+                sas.neo4j_pushers.add_entities(session, 'organism', sas.intermine_data_loaders.get_im_organisms(curs))
                 sas.neo4j_pushers.add_relationships(session, genes)
