@@ -36,6 +36,7 @@ def get_im_organisms(curs):
 
     for row in curs:
         organisms[row['id']] = {
+            'im_id': row['id'],
             'external_primary_id': row['taxonid'],
             'name': row['name'],
             'type': row['class']
