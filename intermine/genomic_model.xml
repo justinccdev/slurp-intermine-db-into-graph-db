@@ -684,7 +684,7 @@
 	<attribute name="name" type="java.lang.String" term="http://semanticscience.org/resource/SIO_000116"/>
 	<attribute name="primaryIdentifier" type="java.lang.String" term="http://semanticscience.org/resource/SIO_000115"/>
 	<attribute name="secondaryIdentifier" type="java.lang.String" term="http://semanticscience.org/resource/SIO_000115"/>
-	<reference name="organism" referenced-type="Organism"/>
+	<reference name="organism" referenced-type="Organism" term="http://purl.bioontology.org/ontology/STY/T001"/>
 	<collection name="interactions" referenced-type="Interaction" reverse-reference="participant1"/>
 	<collection name="locations" referenced-type="Location" reverse-reference="feature"/>
 	<collection name="publications" referenced-type="Publication" reverse-reference="bioEntities"/>

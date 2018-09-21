@@ -1,15 +1,15 @@
-def add_entities(session, type, entities):
+def add_entities(session, _type, entities):
     """
     Add entities
     :param session:
-    :param type:
+    :param _type:
     :param entities:
     :return:
     """
     for im_id, entity in entities.items():
         print(entity)
 
-        command = 'CREATE (:%s {' % type
+        command = 'CREATE (:%s {' % _type
 
         count = 0
         limit = len(entity)
@@ -23,6 +23,7 @@ def add_entities(session, type, entities):
         command += ' })'
 
         session.run(command)
+
 
 def add_relationships(session, genes):
     """
