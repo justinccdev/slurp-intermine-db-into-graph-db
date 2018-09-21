@@ -1,5 +1,5 @@
 def get_im_genes(curs):
-    curs.execute("SELECT * FROM gene LIMIT 5")
+    curs.execute("SELECT * FROM gene")
 
     _map = {
         # This is a hack because the primary identifier is not an accession number and the actual ncbigene ID is
