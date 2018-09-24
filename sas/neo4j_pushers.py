@@ -6,33 +6,40 @@ def add_entities(session, _type, entities):
     :param entities:
     :return:
     """
+
     for im_id, entity in entities.items():
         print(entity)
 
-        command = 'CREATE (:%s {' % _type
+        cmd = 'CREATE (:%s {' % _type
 
         count = 0
         limit = len(entity)
         for k, v in entity.items():
             count += 1
-            command += " %s:'%s'" % (k, v)
+
+            # Escape single quotes
+            if v is not None and isinstance(v, str):
+                v = v.replace("'", "\\'")
+
+            cmd += " %s:'%s'" % (k, v)
 
             if count < limit:
-                command += ','
+                cmd += ','
 
-        command += ' })'
+        cmd += ' })'
 
-        session.run(command)
+        print('Command [%s]' % cmd)
+
+        session.run(cmd)
 
 
-def add_relationships(session, genes):
+def add_relationships(session):
     """
     Add relationships between entities
     :param session:
     :param genes:
     :return:
     """
-    for im_id, gene in genes.items():
-        session.run(
-            "MATCH (g:gene {im_id:'%s'}), (o:organism {im_id:'%s'}) CREATE (g)-[:organism]->(o)"
-            % (im_id, gene['internal_organism_id']))
+    session.run("MATCH (g:gene), (o:organism) WHERE g.internal_organism_id = o.im_id CREATE (g)-[:organism]->(o)")
+    session.run(
+        "MATCH (g:gene), (s:soterm) WHERE g.internal_soterm_id = s.im_id CREATE (g)-[:sequenceOntologyTerm]->(s)")

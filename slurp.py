@@ -18,7 +18,13 @@ with psycopg2.connect(dbname='synbiomine-v6', user='justincc', cursor_factory=ps
     with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'passw0rd')) as driver:
         with driver.session() as session:
             with conn.cursor() as curs:
-                genes = sas.intermine_data_loaders.get_im_genes(curs, args.limit)
-                sas.neo4j_pushers.add_entities(session, 'gene', genes)
-                sas.neo4j_pushers.add_entities(session, 'organism', sas.intermine_data_loaders.get_im_organisms(curs))
-                sas.neo4j_pushers.add_relationships(session, genes)
+                sas.neo4j_pushers.add_entities(
+                    session, 'gene', sas.intermine_data_loaders.get_im_genes(curs, args.limit))
+
+                sas.neo4j_pushers.add_entities(
+                    session, 'organism', sas.intermine_data_loaders.get_im_organisms(curs))
+
+                sas.neo4j_pushers.add_entities(
+                    session, 'soterm', sas.intermine_data_loaders.get_soterms(curs))
+
+                sas.neo4j_pushers.add_relationships(session)
