@@ -1,4 +1,4 @@
-def get_im_genes(curs, limit=None):
+def get_genes(curs, limit=None):
     _map = {
         # This is a hack because the primary identifier is not an accession number and the actual ncbigene ID is
         # not captured by Synbiomine
@@ -11,7 +11,7 @@ def get_im_genes(curs, limit=None):
     return map_rows_to_dicts(curs, 'gene', _map, limit)
 
 
-def get_im_organisms(curs):
+def get_organisms(curs):
     _map = {
         'taxonid': 'id',
         'class': 'type',
