@@ -5,9 +5,7 @@ def get_im_genes(curs, limit=None):
         'secondaryidentifier': 'id',
         'organismid': 'internal_organism_id',
         'sequenceontologytermid': 'internal_soterm_id',
-        'primaryidentifier': 'name',
-        'class': 'type',
-        'id': 'im_id'
+        'primaryidentifier': 'name'
     }
 
     return map_rows_to_dicts(curs, 'gene', _map, limit)
@@ -17,7 +15,6 @@ def get_im_organisms(curs):
     _map = {
         'taxonid': 'id',
         'class': 'type',
-        'id': 'im_id'
     }
 
     return map_rows_to_dicts(curs, 'organism', _map)
@@ -25,7 +22,6 @@ def get_im_organisms(curs):
 
 def get_soterms(curs):
     _map = {
-        'id': 'im_id',
         'identifier': 'id',
         'ontologyid': 'internal_ontology_id'
     }
@@ -34,6 +30,9 @@ def get_soterms(curs):
 
 
 def map_rows_to_dicts(curs, _type, _map, limit=None):
+    _map['id'] = 'im_id'
+    _map['class'] = 'type'
+
     entities = {}
 
     cmd = 'SELECT * FROM %s' % _type
