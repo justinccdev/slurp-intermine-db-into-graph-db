@@ -1,4 +1,4 @@
-def get_im_genes(curs):
+def get_im_genes(curs, limit=None):
     _map = {
         # This is a hack because the primary identifier is not an accession number and the actual ncbigene ID is
         # not captured by Synbiomine
@@ -9,7 +9,7 @@ def get_im_genes(curs):
         'id':'im_id'
     }
 
-    return map_rows_to_dicts(curs, 'gene', _map)
+    return map_rows_to_dicts(curs, 'gene', _map, limit)
 
 
 def get_im_organisms(curs):
@@ -25,7 +25,11 @@ def get_im_organisms(curs):
 def map_rows_to_dicts(curs, _type, _map):
     entities = {}
 
-    curs.execute('SELECT * FROM %s' % _type)
+    cmd = 'SELECT * FROM %s' % _type
+    if limit is not None:
+        cmd += ' LIMIT %d' % limit
+
+    curs.execute(cmd)
 
     for row in curs:
         entity = {}
