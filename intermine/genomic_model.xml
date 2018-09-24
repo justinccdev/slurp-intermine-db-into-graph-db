@@ -249,7 +249,7 @@
 	<attribute name="scoreType" type="java.lang.String"/>
 	<attribute name="length" type="java.lang.Integer" term="http://edamontology.org/data_1249"/>
 	<attribute name="cytoLocation" type="java.lang.String"/>
-	<reference name="sequenceOntologyTerm" referenced-type="SOTerm"/>
+	<reference name="sequenceOntologyTerm" referenced-type="SOTerm" term="http://edamontology.org/data_0996"/>
 	<reference name="chromosomeLocation" referenced-type="Location"/>
 	<reference name="sequence" referenced-type="Sequence"/>
 	<reference name="chromosome" referenced-type="Chromosome"/>

@@ -1,4 +1,5 @@
 <prefixes>
-    <prefix type="org.intermine.model.bio.Gene" prefix="ecogene"/>
+    <prefix type="org.intermine.model.bio.Gene"     prefix="ecogene"/>
     <prefix type="org.intermine.model.bio.Organism" prefix="taxonomy"/>
+    <prefix type="org.intermine.model.bio.SOTerm"   prefix="so"/>
 </prefixes>
