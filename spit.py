@@ -5,15 +5,15 @@ import argparse
 import neo4j.v1
 
 import sas.intermine_model_loaders
-import sas.loaders
+import sas.config_loaders
 import sas.rdf_creators
 
 parser = argparse.ArgumentParser('Spit out RDF for a given gene ID (try EG11277)')
 parser.add_argument('id', help='Gene ID')
 args = parser.parse_args()
 
-fair_prefixes = sas.loaders.load_fair_prefixes('config/fair-prefixes.xml')
-rdf_prefixes = sas.loaders.load_rdf_prefixes('config/rdf-prefixes.xml')
+fair_prefixes = sas.config_loaders.load_fair_prefixes('config/fair-prefixes.xml')
+rdf_prefixes = sas.config_loaders.load_rdf_prefixes('config/rdf-prefixes.xml')
 model_terms = sas.intermine_model_loaders.load_terms('intermine/genomic_model.xml')
 
 prefixes_used = set()
