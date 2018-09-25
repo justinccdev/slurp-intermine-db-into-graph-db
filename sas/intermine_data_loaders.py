@@ -1,7 +1,4 @@
 def map_rows_to_dicts(curs, _type, _map, restriction_list=None):
-    _map['id'] = 'im_id'
-    _map['class'] = 'type'
-
     entities = {}
 
     cmd = 'SELECT * FROM %s' % _type

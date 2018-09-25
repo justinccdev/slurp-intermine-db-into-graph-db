@@ -18,6 +18,10 @@ import sas.intermine_data_loaders
 with open('config/intermine_to_neo4j_map.json') as f:
     intermine_to_neo4j_map = json.load(f)
 
+print(intermine_to_neo4j_map)
+for _map in intermine_to_neo4j_map['@maps'].values():
+    _map.update(intermine_to_neo4j_map['@general'])
+
 # If we are going to restrict the intermine entities that we map to neo4j, this is where we would do it
 restrictions = {
     'gene': None,
@@ -53,7 +57,7 @@ with \
             print(restrictions)
 
         with driver.session() as session:
-            for intermine_class, _map in intermine_to_neo4j_map.items():
+            for intermine_class, _map in intermine_to_neo4j_map['@maps'].items():
                  sas.neo4j_pushers.add_entities(
                      session,
                      intermine_class,
