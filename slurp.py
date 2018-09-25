@@ -39,20 +39,46 @@ intermine_to_neo4j_map = {
     }
 }
 
-parser = argparse.ArgumentParser('Slurp InterMine data into Neo4J')
-parser.add_argument('--limit', type=int, help='limit number of genes slurped for quicker testing')
-args = parser.parse_args()
+# If we are going to restrict the intermine entities that we map to neo4j, this is where we would do it
+restrictions = {
+    'gene': None,
+    'organism': None,
+    'protein': None,
+    'soterm': None
+}
 
+parser = argparse.ArgumentParser('Slurp InterMine data into Neo4J')
+# parser.add_argument('--limit', type=int, help='limit number of genes slurped for quicker testing')
+parser.add_argument('gene', nargs='?')
+
+args = parser.parse_args()
 
 with \
     psycopg2.connect(dbname='synbiomine-v5-poc4', user='justincc', cursor_factory=psycopg2.extras.DictCursor) as conn, \
     neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'passw0rd')) as driver, \
-    conn.cursor() as curs, \
-    driver.session() as session:
-        for intermine_class, _map in intermine_to_neo4j_map.items():
-             sas.neo4j_pushers.add_entities(
-                 session,
-                 intermine_class,
-                 sas.intermine_data_loaders.map_rows_to_dicts(curs, intermine_class, _map, args.limit))
+    conn.cursor() as curs:
+        # TODO: This is extremely crude and needs major refinement
+        if args.gene is not None:
+            curs.execute('SELECT * FROM gene where secondaryidentifier=%s', (args.gene, ))
+            restrictions['gene'] = [str(curs.fetchone()['id'])]
 
-        sas.neo4j_pushers.add_relationships(curs, session)
+            restrictions['protein'] = []
+            for im_id in restrictions['gene']:
+                curs.execute('SELECT proteins FROM genesproteins WHERE genes=%s', (im_id,))
+                for row in curs:
+                    restrictions['protein'].append(str(row['proteins']))
+
+            restrictions['organism'] = []
+            restrictions['soterm'] = []
+
+            print(restrictions)
+
+        with driver.session() as session:
+            for intermine_class, _map in intermine_to_neo4j_map.items():
+                 sas.neo4j_pushers.add_entities(
+                     session,
+                     intermine_class,
+                     sas.intermine_data_loaders.map_rows_to_dicts(
+                         curs, intermine_class, _map, restrictions[intermine_class]))
+
+            sas.neo4j_pushers.add_relationships(curs, session, restrictions['gene'])

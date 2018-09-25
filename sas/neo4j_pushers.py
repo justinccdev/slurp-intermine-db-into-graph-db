@@ -7,6 +7,10 @@ def add_entities(session, _type, entities):
     :return:
     """
 
+    # Need to create an index for more efficient joining when we need to connect intermine neo4j entities by their
+    # im_id
+    session.run('CREATE INDEX ON :%s(im_id)' %_type)
+
     i = 0
 
     for im_id, entity in entities.items():
@@ -39,7 +43,7 @@ def add_entities(session, _type, entities):
         session.run(cmd)
 
 
-def add_relationships(curs, session):
+def add_relationships(curs, session, restriction_list):
     """
     Add relationships between entities
     :param conn:
@@ -55,13 +59,26 @@ def add_relationships(curs, session):
         "MATCH (g:gene),(s:soterm) WHERE g.internal_soterm_id = s.im_id CREATE (g)-[:sequenceOntologyTerm]->(s)")
 
     print('Adding gene->protein relationships')
-    curs.execute("SELECT * from genesproteins")
+
+    cmd = 'SELECT * from genesproteins'
+
+    if restriction_list is not None:
+        if not restriction_list:
+            return {}
+
+        print(','.join(restriction_list))
+        cmd += ' WHERE genes IN (%s)' % ','.join(restriction_list)
+
+    curs.execute(cmd)
 
     i = 0
     for row in curs:
         i += 1
         print('Assessing genesproteins row %d' % i)
 
-        session.run(
-            "MATCH (g:gene),(p:protein) WHERE g.im_id = %d AND p.im_id = %d CREATE (g)-[:protein]->(o)"
-            % (row['genes'], row['proteins']))
+        cmd = "MATCH (g:gene),(p:protein) WHERE g.im_id = '%d' AND p.im_id = '%d' CREATE (g)-[:protein]->(p)" \
+            % (row['genes'], row['proteins'])
+
+        print(cmd)
+
+        session.run(cmd)

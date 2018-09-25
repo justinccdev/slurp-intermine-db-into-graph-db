@@ -1,13 +1,19 @@
-def map_rows_to_dicts(curs, _type, _map, limit=None):
+def map_rows_to_dicts(curs, _type, _map, restriction_list=None):
     _map['id'] = 'im_id'
     _map['class'] = 'type'
 
     entities = {}
 
     cmd = 'SELECT * FROM %s' % _type
-    if limit is not None:
-        cmd += ' LIMIT %d' % limit
 
+    if restriction_list is not None:
+        if not restriction_list:
+            return {}
+
+        print(','.join(restriction_list))
+        cmd += ' WHERE id IN (%s)' % ','.join(restriction_list)
+
+    print(cmd)
     curs.execute(cmd)
 
     for row in curs:
