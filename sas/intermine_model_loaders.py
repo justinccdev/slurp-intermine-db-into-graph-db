@@ -1,7 +1,7 @@
 from lxml import etree
 
 
-def build_class_tree_from_xml_tree(xml_tree):
+def _build_class_tree_from_xml_tree(xml_tree):
     """
     Given InterMine model XML, return a structure where children classes point to parents[]
     :param xml_tree:
@@ -51,7 +51,7 @@ def load_terms(model_path):
                 model_terms[model_node] = attrib['term']
 
     # Now go through the class tree and copy ancestor class properties into descendants
-    class_tree = build_class_tree_from_xml_tree(xml_tree)
+    class_tree = _build_class_tree_from_xml_tree(xml_tree)
 
     def get_ancestor_attributes(_class):
         attributes = []
