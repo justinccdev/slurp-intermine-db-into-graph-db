@@ -76,7 +76,7 @@ def add_relationships(curs, session, restriction_list):
         i += 1
         print('Assessing genesproteins row %d' % i)
 
-        cmd = "MATCH (g:gene),(p:protein) WHERE g.im_id = '%d' AND p.im_id = '%d' CREATE (g)-[:protein]->(p)" \
+        cmd = "MATCH (g:gene),(p:protein) WHERE g.im_id = '%d' AND p.im_id = '%d' CREATE (g)-[:proteins]->(p)" \
             % (row['genes'], row['proteins'])
 
         print(cmd)
