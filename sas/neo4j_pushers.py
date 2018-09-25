@@ -46,12 +46,22 @@ def add_relationships(curs, session):
     :param session:
     :return:
     """
-    session.run("MATCH (g:gene), (o:organism) WHERE g.internal_organism_id = o.im_id CREATE (g)-[:organism]->(o)")
-    session.run(
-        "MATCH (g:gene), (s:soterm) WHERE g.internal_soterm_id = s.im_id CREATE (g)-[:sequenceOntologyTerm]->(s)")
 
+    print('Adding gene->organism relationships')
+    session.run("MATCH (g:gene),(o:organism) WHERE g.internal_organism_id = o.im_id CREATE (g)-[:organism]->(o)")
+
+    print('Adding gene->soterm relationsihps')
+    session.run(
+        "MATCH (g:gene),(s:soterm) WHERE g.internal_soterm_id = s.im_id CREATE (g)-[:sequenceOntologyTerm]->(s)")
+
+    print('Adding gene->protein relationships')
     curs.execute("SELECT * from genesproteins")
+
+    i = 0
     for row in curs:
+        i += 1
+        print('Assessing genesproteins row %d' % i)
+
         session.run(
-            "MATCH (g:gene), (p:protein) WHERE g.im_id = %d AND p.im_id = %d CREATE (g)-[:protein]->(o)"
+            "MATCH (g:gene),(p:protein) WHERE g.im_id = %d AND p.im_id = %d CREATE (g)-[:protein]->(o)"
             % (row['genes'], row['proteins']))
