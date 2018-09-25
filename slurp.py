@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import argparse
-import json
 
 import neo4j.v1
 import psycopg2.extras
