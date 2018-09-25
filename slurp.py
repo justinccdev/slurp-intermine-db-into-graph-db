@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import json
 
 import neo4j.v1
 import psycopg2.extras
@@ -14,30 +15,8 @@ import sas.intermine_data_loaders
 # { 'id': 'im_id',
 #   'class': 'type }
 # for everything
-intermine_to_neo4j_map = {
-    'gene': {
-        # This is a hack because the primary identifier is not an accession number and the actual ncbigene ID is
-        # not captured by Synbiomine
-        'secondaryidentifier': 'id',
-        'organismid': 'internal_organism_id',
-        'sequenceontologytermid': 'internal_soterm_id',
-        'primaryidentifier': 'name'
-    },
-
-    'organism': {
-        'taxonid': 'id',
-        'class': 'type'
-    },
-
-    'protein': {
-        'primaryaccession': 'id'
-    },
-
-    'soterm': {
-        'identifier': 'id',
-        'ontologyid': 'internal_ontology_id'
-    }
-}
+with open('config/intermine_to_neo4j_map.json') as f:
+    intermine_to_neo4j_map = json.load(f)
 
 # If we are going to restrict the intermine entities that we map to neo4j, this is where we would do it
 restrictions = {

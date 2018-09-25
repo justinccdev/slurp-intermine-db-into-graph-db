@@ -1,0 +1,23 @@
+{
+    "gene": {
+        "#":"This is a hack because the primary identifier is not an accession number and the actual ncbigene ID is not captured by Synbiomine",
+        "secondaryidentifier": "id",
+        "organismid": "internal_organism_id",
+        "sequenceontologytermid": "internal_soterm_id",
+        "primaryidentifier": "name"
+    },
+
+    "organism": {
+        "taxonid": "id",
+        "class": "type"
+    },
+
+    "protein": {
+        "primaryaccession": "id"
+    },
+
+    "soterm": {
+        "identifier": "id",
+        "ontologyid": "internal_ontology_id"
+    }
+}
