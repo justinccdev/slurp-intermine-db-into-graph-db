@@ -1,16 +1,6 @@
 from lxml import etree
 
 
-def get_full_node_name(package, short_node_name):
-    """
-    Given a package name and the short node name, return the full node name
-    :param package:
-    :param short_node_name:
-    :return:
-    """
-    return '%s.%s' % (package, short_node_name)
-
-
 def build_class_tree_from_xml_tree(xml_tree):
     """
     Given InterMine model XML, return a structure where children classes point to parents[]
@@ -48,8 +38,6 @@ def load_terms(model_path):
     for _class in xml_tree.xpath('//class'):
         attrib = _class.attrib
         class_name = attrib['name']
-
-        # model_class = get_full_node_name(model_package, class_name)
 
         if 'term' in attrib:
             # model_terms[model_class] = attrib['term']
