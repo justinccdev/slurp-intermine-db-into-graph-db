@@ -496,7 +496,7 @@
 	<reference name="downstreamIntergenicRegion" referenced-type="IntergenicRegion"/>
 	<collection name="flankingRegions" referenced-type="GeneFlankingRegion" reverse-reference="gene"/>
 	<collection name="introns" referenced-type="Intron" reverse-reference="genes"/>
-	<collection name="proteins" referenced-type="Protein" reverse-reference="genes"/>
+	<collection name="proteins" referenced-type="Protein" reverse-reference="genes" term="http://semanticscience.org/resource/SIO_010043"/>
 	<collection name="rnaiResults" referenced-type="RNAiResult" reverse-reference="gene"/>
 	<collection name="CDSs" referenced-type="CDS" reverse-reference="gene"/>
 	<collection name="homologues" referenced-type="Homologue" reverse-reference="gene"/>

@@ -11,6 +11,14 @@ def get_genes(curs, limit=None):
     return map_rows_to_dicts(curs, 'gene', _map, limit)
 
 
+def get_proteins(curs):
+    _map = {
+        'primaryaccession': 'id'
+    }
+
+    return map_rows_to_dicts(curs, 'protein', _map)
+
+
 def get_organisms(curs):
     _map = {
         'taxonid': 'id',
@@ -43,7 +51,7 @@ def map_rows_to_dicts(curs, _type, _map, limit=None):
 
     for row in curs:
         entity = {}
-        print(row)
+        # print(row)
 
         for k, v in row.items():
             if k in _map:

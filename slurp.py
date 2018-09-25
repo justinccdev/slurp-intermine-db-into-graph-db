@@ -14,7 +14,7 @@ parser.add_argument('--limit', type=int, help='limit number of genes slurped for
 args = parser.parse_args()
 
 
-with psycopg2.connect(dbname='synbiomine-v6', user='justincc', cursor_factory=psycopg2.extras.DictCursor) as conn:
+with psycopg2.connect(dbname='synbiomine-v5-poc4', user='justincc', cursor_factory=psycopg2.extras.DictCursor) as conn:
     with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'passw0rd')) as driver:
         with driver.session() as session:
             with conn.cursor() as curs:
@@ -22,9 +22,12 @@ with psycopg2.connect(dbname='synbiomine-v6', user='justincc', cursor_factory=ps
                     session, 'gene', sas.intermine_data_loaders.get_genes(curs, args.limit))
 
                 sas.neo4j_pushers.add_entities(
+                    session, 'protein', sas.intermine_data_loaders.get_proteins(curs))
+
+                sas.neo4j_pushers.add_entities(
                     session, 'organism', sas.intermine_data_loaders.get_organisms(curs))
 
                 sas.neo4j_pushers.add_entities(
                     session, 'soterm', sas.intermine_data_loaders.get_soterms(curs))
 
-                sas.neo4j_pushers.add_relationships(session)
+                sas.neo4j_pushers.add_relationships(curs, session)
