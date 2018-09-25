@@ -1,4 +1,16 @@
+import json
+
 from lxml import etree
+
+
+def load_intermine_to_neo4j_map(map_path):
+    with open(map_path) as f:
+        intermine_to_neo4j_map = json.load(f)
+
+    for _map in intermine_to_neo4j_map['@maps'].values():
+        _map.update(intermine_to_neo4j_map['@general'])
+
+    return intermine_to_neo4j_map
 
 
 def load_fair_prefixes(prefixes_path):

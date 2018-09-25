@@ -6,21 +6,12 @@ import json
 import neo4j.v1
 import psycopg2.extras
 
+import sas.config_loaders
 import sas.neo4j_pushers
 import sas.intermine_data_loaders
 
 
-# Map intermine columns to neo4j properties.
-# Implicitly, we are doing
-# { 'id': 'im_id',
-#   'class': 'type }
-# for everything
-with open('config/intermine_to_neo4j_map.json') as f:
-    intermine_to_neo4j_map = json.load(f)
-
-print(intermine_to_neo4j_map)
-for _map in intermine_to_neo4j_map['@maps'].values():
-    _map.update(intermine_to_neo4j_map['@general'])
+intermine_to_neo4j_map = sas.config_loaders.load_intermine_to_neo4j_map('config/intermine_to_neo4j_map.json')
 
 # If we are going to restrict the intermine entities that we map to neo4j, this is where we would do it
 restrictions = {
