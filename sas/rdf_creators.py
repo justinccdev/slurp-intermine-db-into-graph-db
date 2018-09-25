@@ -42,12 +42,12 @@ def get_rdf_for_triple_part(part, prefixes):
     return part
 
 
-def process_node_properties(node, node_type, model_terms, rdf_prefixes, prefixes_used, pos):
+def process_node_properties(node, node_type, model_nodes, rdf_prefixes, prefixes_used, pos):
     """
     Process the properties of a graph node
     :param node:
     :param node_type:
-    :param model_terms:
+    :param model_nodes:
     :param rdf_prefixes:
     :param prefixes_used:
     :param pos:
@@ -57,13 +57,22 @@ def process_node_properties(node, node_type, model_terms, rdf_prefixes, prefixes
         # print('KEY-VALUE: %s,%s' % (key, value))
 
         if key == 'type':
-            term = model_terms.get(node_type)
+            term = model_nodes.get(node_type).get('term')
             p, o = 'a', term
         else:
-            term = model_terms.get('%s.%s' % (node_type, key))
+            path = '%s.%s' % (node_type, key)
+            print('Looking for path [%s]' % path)
+
+            node = model_nodes.get(path)
+
+            if not node is None:
+                term = model_nodes.get(path).get('term')
+            else:
+                term = None
 
             p, o = term, value
 
+        print('Term was [%s]' % term)
         if term is not None:
             prefix, _ = find_rdf_prefix(term, rdf_prefixes)
             if prefix is not None:
@@ -72,12 +81,12 @@ def process_node_properties(node, node_type, model_terms, rdf_prefixes, prefixes
             pos.append((p, o))
 
 
-def process_node_relationships(relationships, node_type, model_terms, rdf_prefixes, prefixes_used, fair_prefixes, pos):
+def process_node_relationships(relationships, node_type, model_nodes, rdf_prefixes, prefixes_used, fair_prefixes, pos):
     """
     Process the relationships of a graph node
     :param relationships:
     :param node_type:
-    :param model_terms:
+    :param model_nodes:
     :param rdf_prefixes:
     :param prefixes_used:
     :param fair_prefixes:
@@ -86,7 +95,7 @@ def process_node_relationships(relationships, node_type, model_terms, rdf_prefix
     """
     for record in relationships:
         predicate = record['type(r)']
-        term = model_terms.get('%s.%s' % (node_type, predicate))
+        term = model_nodes.get('%s.%s' % (node_type, predicate)).get('term')
 
         if term is not None:
             prefix, _ = find_rdf_prefix(term, rdf_prefixes)

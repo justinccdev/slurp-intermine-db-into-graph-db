@@ -22,9 +22,9 @@ def _build_class_tree_from_xml_tree(xml_tree):
     return class_tree
 
 
-def load_terms(model_path):
+def load_model(model_path):
     """
-    Load available terms from the InterMine model
+    Load an InterMine model
 
     :param model_path:
     :return:
@@ -32,60 +32,64 @@ def load_terms(model_path):
     xml_tree = etree.parse(model_path)
     # model_package = xml_tree.xpath('//model/@package')[0]
 
-    model_terms = {}
+    model_nodes = {}
 
     # Record terms for classes and properties
     for _class in xml_tree.xpath('//class'):
         attrib = _class.attrib
         class_name = attrib['name']
 
+        model_nodes[class_name] = {'type': 'class'}
         if 'term' in attrib:
             # model_terms[model_class] = attrib['term']
-            model_terms[class_name] = attrib['term']
+            model_nodes[class_name]['term'] = attrib['term']
 
         for _property in xml_tree.xpath("//class[@name='%s']/*" % class_name):
             attrib = _property.attrib
 
+            model_path = '%s.%s' % (class_name, attrib['name'])
+            model_nodes[model_path] = {'type': _property.tag }
+
             if 'term' in attrib:
-                model_node = '%s.%s' % (class_name, attrib['name'])
-                model_terms[model_node] = attrib['term']
+                model_nodes[model_path]['term'] = attrib['term']
 
     # Now go through the class tree and copy ancestor class properties into descendants
     class_tree = _build_class_tree_from_xml_tree(xml_tree)
 
-    def get_ancestor_attributes(_class):
-        attributes = []
+    def get_ancestor_paths(_class):
+        paths = []
 
         # We need to ignore any ancestor that isn't actually present in the model.  At least some InterMine models are
         # guilty of this by specifying 'java.lang.Object'
         if _class not in class_tree:
-            return attributes
+            return paths
 
         parents = class_tree[_class]
 
         if parents is not None:
             for parent in parents:
-                attributes.extend(get_ancestor_attributes(parent))
+                paths.extend(get_ancestor_paths(parent))
 
-        for _term in model_terms:
+        for _term in model_nodes:
             if _term.startswith(_class) and _term != _class:
-                attributes.append(_term)
+                paths.append(_term)
 
-        return attributes
+        return paths
 
     for _class in xml_tree.xpath('//class'):
         attrib = _class.attrib
         class_name = attrib['name']
 
-        for ancestor_attribute in get_ancestor_attributes(class_name):
-            term = model_terms[ancestor_attribute]
-            simple_attribute_name = ancestor_attribute.rpartition('.')[2]
-            model_node = '%s.%s' % (class_name, simple_attribute_name)
-            model_terms[model_node] = term
+        for path in get_ancestor_paths(class_name):
+            node = model_nodes[path]
+            simple_path_name = path.rpartition('.')[2]
+            model_path = '%s.%s' % (class_name, simple_path_name)
+            model_nodes[model_path] = node
 
-    """
-    for k, v in model_terms.items():
+    # print(model_nodes)
+
+    for k, v in model_nodes.items():
         print('Model term (%s,%s)' % (k, v))
-    """
 
-    return model_terms
+
+    return model_nodes

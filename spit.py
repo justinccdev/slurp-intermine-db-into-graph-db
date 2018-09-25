@@ -14,7 +14,7 @@ args = parser.parse_args()
 
 fair_prefixes = sas.config_loaders.load_fair_prefixes('config/fair-prefixes.xml')
 rdf_prefixes = sas.config_loaders.load_rdf_prefixes('config/rdf-prefixes.xml')
-model_terms = sas.intermine_model_loaders.load_terms('intermine/genomic_model.xml')
+model_terms = sas.intermine_model_loaders.load_model('intermine/genomic_model.xml')
 
 prefixes_used = set()
 subjects = {}
