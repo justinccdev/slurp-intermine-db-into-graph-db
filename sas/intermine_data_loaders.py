@@ -1,4 +1,4 @@
-def get_im_ids_for_referenced_type(curs, source_type, source_im_ids, referenced_type, intermine_model):
+def get_referenced_im_ids(curs, source_type, source_im_ids, referenced_type, intermine_model):
     referenced_im_ids = []
 
     paths = list(filter(lambda k: k.startswith('%s.' % source_type), intermine_model.keys()))

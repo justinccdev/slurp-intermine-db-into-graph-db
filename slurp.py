@@ -38,15 +38,15 @@ with \
             restrictions['Gene'] = [str(curs.fetchone()['id'])]
 
             restrictions['Protein'] \
-                = sas.intermine_data_loaders.get_im_ids_for_referenced_type(
+                = sas.intermine_data_loaders.get_referenced_im_ids(
                     curs, 'Gene', restrictions['Gene'], 'Protein', intermine_model)
 
             restrictions['Organism'] \
-                = sas.intermine_data_loaders.get_im_ids_for_referenced_type(
+                = sas.intermine_data_loaders.get_referenced_im_ids(
                     curs, 'Gene', restrictions['Gene'], 'Organism', intermine_model)
 
             restrictions['SOTerm'] \
-                = sas.intermine_data_loaders.get_im_ids_for_referenced_type(
+                = sas.intermine_data_loaders.get_referenced_im_ids(
                     curs, 'Gene', restrictions['Gene'], 'SOTerm', intermine_model)
 
             print(restrictions)
