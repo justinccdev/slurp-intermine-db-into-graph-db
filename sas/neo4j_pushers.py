@@ -51,14 +51,14 @@ def add_relationships(curs, session, restriction_list):
     :return:
     """
 
-    print('Adding gene->organism relationships')
-    session.run("MATCH (g:gene),(o:organism) WHERE g.internal_organism_id = o.im_id CREATE (g)-[:organism]->(o)")
+    print('Adding Gene->Organism relationships')
+    session.run("MATCH (g:Gene),(o:Organism) WHERE g.internal_organism_id = o.im_id CREATE (g)-[:organism]->(o)")
 
-    print('Adding gene->soterm relationsihps')
+    print('Adding Gene->SOTerm relationsihps')
     session.run(
-        "MATCH (g:gene),(s:soterm) WHERE g.internal_soterm_id = s.im_id CREATE (g)-[:sequenceOntologyTerm]->(s)")
+        "MATCH (g:Gene),(s:SOTerm) WHERE g.internal_soterm_id = s.im_id CREATE (g)-[:sequenceOntologyTerm]->(s)")
 
-    print('Adding gene->protein relationships')
+    print('Adding Gene->Protein relationships')
 
     cmd = 'SELECT * from genesproteins'
 
@@ -76,7 +76,7 @@ def add_relationships(curs, session, restriction_list):
         i += 1
         print('Assessing genesproteins row %d' % i)
 
-        cmd = "MATCH (g:gene),(p:protein) WHERE g.im_id = '%d' AND p.im_id = '%d' CREATE (g)-[:proteins]->(p)" \
+        cmd = "MATCH (g:Gene),(p:Protein) WHERE g.im_id = '%d' AND p.im_id = '%d' CREATE (g)-[:proteins]->(p)" \
             % (row['genes'], row['proteins'])
 
         print(cmd)

@@ -89,7 +89,7 @@ def load_model(model_path):
 
     # print(model_nodes)
 
-    for k, v in model_nodes.items():
+    for k, v in sorted(model_nodes.items()):
         print('Model term (%s,%s)' % (k, v))
 
 

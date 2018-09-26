@@ -34,7 +34,7 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
         sas.rdf_creators.process_node_properties(node, node_type, model_terms, rdf_prefixes, prefixes_used, pos)
 
         # look for relationships
-        result = session.run("MATCH (g:gene {id:'%s'})-[r]-(b) RETURN type(r), b" % args.id)
+        result = session.run("MATCH (g:Gene {id:'%s'})-[r]-(b) RETURN type(r), b" % args.id)
 
         sas.rdf_creators.process_node_relationships(
             result, node_type, model_terms, rdf_prefixes, prefixes_used, fair_prefixes, pos)

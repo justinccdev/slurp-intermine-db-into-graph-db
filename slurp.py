@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import sys
 
 import neo4j.v1
 import psycopg2.extras
@@ -8,9 +9,11 @@ import psycopg2.extras
 import sas.config_loaders
 import sas.neo4j_pushers
 import sas.intermine_data_loaders
+import sas.intermine_model_loaders
 
 
 intermine_to_neo4j_map = sas.config_loaders.load_intermine_to_neo4j_map('config/intermine_to_neo4j_map.json')
+intermine_model = sas.intermine_model_loaders.load_model('intermine/genomic_model.xml')
 
 # If we are going to restrict the intermine entities that we map to neo4j, this is where we would do it
 restrictions = {
@@ -36,10 +39,20 @@ with \
             restrictions['Gene'] = [str(curs.fetchone()['id'])]
 
             restrictions['Protein'] = []
+            paths = list(filter(lambda k: k.startswith('Gene.'), intermine_model.keys()))
+            referenced_type_paths \
+                = list(filter(lambda k: intermine_model[k].get('referenced-type') == 'Protein', paths))
+
             for im_id in restrictions['Gene']:
-                curs.execute('SELECT proteins FROM genesproteins WHERE genes=%s', (im_id,))
-                for row in curs:
-                    restrictions['Protein'].append(str(row['proteins']))
+                nodes = [intermine_model[path] for path in referenced_type_paths]
+                for node in nodes:
+                    if node['type'] == 'collection':
+                        table_name = '%s%s' % (node['reverse-reference'], node['name'])
+                        curs.execute(
+                            'SELECT %s FROM %s WHERE %s=%s' % (node['name'], table_name, node['reverse-reference'], im_id))
+
+                        for row in curs:
+                            restrictions['Protein'].append(str(row[node['name']]))
 
             restrictions['Organism'] = []
             restrictions['SOTerm'] = []
