@@ -37,17 +37,10 @@ with \
             curs.execute('SELECT * FROM gene where secondaryidentifier=%s', (args.gene, ))
             restrictions['Gene'] = [str(curs.fetchone()['id'])]
 
-            restrictions['Protein'] \
-                = sas.intermine_data_loaders.get_referenced_im_ids(
-                    curs, 'Gene', restrictions['Gene'], 'Protein', intermine_model)
-
-            restrictions['Organism'] \
-                = sas.intermine_data_loaders.get_referenced_im_ids(
-                    curs, 'Gene', restrictions['Gene'], 'Organism', intermine_model)
-
-            restrictions['SOTerm'] \
-                = sas.intermine_data_loaders.get_referenced_im_ids(
-                    curs, 'Gene', restrictions['Gene'], 'SOTerm', intermine_model)
+            for referenced_type in ('Protein', 'Organism', 'SOTerm'):
+                restrictions[referenced_type] \
+                    = sas.intermine_data_loaders.get_referenced_im_ids(
+                        curs, 'Gene', restrictions['Gene'], referenced_type, intermine_model)
 
             print(restrictions)
 
