@@ -43,21 +43,33 @@ def add_entities(session, _type, entities):
         session.run(cmd)
 
 
-def add_relationships(curs, session, restrictions):
+def add_relationships(curs, session, source_class, target_classes, intermine_model, restrictions):
     """
     Add relationships between entities
     :param conn:
     :param session:
+    :param source_class: The source class to add relationships
+    :param target_classes: The target classes for adding relationships
+    :param intermine_model:
     :param restrictions:
     :return:
     """
 
-    print('Adding Gene->Organism relationships')
-    session.run("MATCH (g:Gene),(o:Organism) WHERE g.organismid = o.im_id CREATE (g)-[:organism]->(o)")
+    for target_class in target_classes:
+        print('Adding %s->%s relationships' % (source_class, target_class))
 
-    print('Adding Gene->SOTerm relationsihps')
-    session.run(
-        "MATCH (g:Gene),(s:SOTerm) WHERE g.sequenceontologytermid = s.im_id CREATE (g)-[:sequenceOntologyTerm]->(s)")
+        paths = filter(lambda k: k.startswith('%s.' % source_class), intermine_model.keys())
+        for path in paths:
+            node = intermine_model[path]
+
+            if node['type'] == 'reference':
+                column_name = '%sid' % node['name'].lower()
+
+                cmd = "MATCH (s:%s),(t:%s) WHERE s.%s = t.im_id CREATE (s)-[:%s]->(t)" \
+                      % (source_class, target_class, column_name, node['name'])
+
+                print(cmd)
+                session.run(cmd)
 
     print('Adding Gene->Protein relationships')
 

@@ -52,4 +52,5 @@ with \
                     sas.intermine_data_loaders.map_rows_to_dicts(
                         curs, intermine_class, _map, restrictions[intermine_class]))
 
-            sas.neo4j_pushers.add_relationships(curs, session, restrictions['Gene'])
+            sas.neo4j_pushers.add_relationships(
+                curs, session, 'Gene', ('Protein', 'Organism', 'SOTerm'), intermine_model, restrictions['Gene'])
