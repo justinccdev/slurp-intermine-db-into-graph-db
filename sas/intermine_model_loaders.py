@@ -50,8 +50,9 @@ def load_model(model_path):
             model_path = '%s.%s' % (class_name, attrib['name'])
             model_nodes[model_path] = {'type': _property.tag }
 
-            if 'term' in attrib:
-                model_nodes[model_path]['term'] = attrib['term']
+            # Get all the other XML attribs in case we need them later. It will be impossible for any to have the same
+            # name as the model_path since XML attribs can't contain periods.
+            model_nodes[model_path].update(attrib)
 
     # Now go through the class tree and copy ancestor class properties into descendants
     class_tree = _build_class_tree_from_xml_tree(xml_tree)
