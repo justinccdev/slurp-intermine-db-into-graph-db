@@ -1,3 +1,6 @@
+import sas.intermine_data_loaders
+
+
 def add_entities(session, _type, entities):
     """
     Add entities
@@ -9,7 +12,7 @@ def add_entities(session, _type, entities):
 
     # Need to create an index for more efficient joining when we need to connect intermine neo4j entities by their
     # im_id
-    session.run('CREATE INDEX ON :%s(im_id)' %_type)
+    session.run('CREATE INDEX ON :%s(im_id)' % _type)
 
     i = 0
 
@@ -46,7 +49,7 @@ def add_entities(session, _type, entities):
 def add_relationships(curs, session, source_class, target_classes, intermine_model, restrictions):
     """
     Add relationships between entities
-    :param conn:
+    :param curs:
     :param session:
     :param source_class: The source class to add relationships
     :param target_classes: The target classes for adding relationships
@@ -59,8 +62,12 @@ def add_relationships(curs, session, source_class, target_classes, intermine_mod
         print('Adding %s->%s relationships' % (source_class, target_class))
 
         paths = filter(lambda k: k.startswith('%s.' % source_class), intermine_model.keys())
-        for path in paths:
+        for path in sorted(paths):
+            print('Processing path %s' % path)
+
             node = intermine_model[path]
+            if node.get('referenced-type') != target_class:
+                continue
 
             if node['type'] == 'reference':
                 column_name = '%sid' % node['name'].lower()
@@ -68,30 +75,45 @@ def add_relationships(curs, session, source_class, target_classes, intermine_mod
                 cmd = "MATCH (s:%s),(t:%s) WHERE s.%s = t.im_id CREATE (s)-[:%s]->(t)" \
                       % (source_class, target_class, column_name, node['name'])
 
-                print(cmd)
+                # print(cmd)
                 session.run(cmd)
 
-    print('Adding Gene->Protein relationships')
+            elif node['type'] == 'collection':
+                if 'reverse-reference' not in node:
+                    print('No reverse-reference for %s to build table name. Skipping' % path)
+                    continue
 
-    cmd = 'SELECT * from genesproteins'
+                table_name = sas.intermine_data_loaders.get_collection_table_name(node)
 
-    if restrictions is not None:
-        if not restrictions:
-            return {}
+                curs.execute("SELECT to_regclass('%s')" % table_name)
+                if not curs.fetchone()[0]:
+                    print('Table %s for adding relationships does not exist. Skipping' % table_name)
+                    continue
 
-        print(','.join(restrictions))
-        cmd += ' WHERE genes IN (%s)' % ','.join(restrictions)
+                cmd = 'SELECT * from %s' % table_name
 
-    curs.execute(cmd)
+                if restrictions is not None:
+                    if not restrictions:
+                        continue
 
-    i = 0
-    for row in curs:
-        i += 1
-        print('Assessing genesproteins row %d' % i)
+                    # print(','.join(restrictions))
+                    cmd += ' WHERE %s IN (%s)' % (node['reverse-reference'], ','.join(restrictions))
 
-        cmd = "MATCH (g:Gene),(p:Protein) WHERE g.im_id = '%d' AND p.im_id = '%d' CREATE (g)-[:proteins]->(p)" \
-            % (row['genes'], row['proteins'])
+                # print(cmd)
+                curs.execute(cmd)
 
-        print(cmd)
+                i = 0
+                for row in curs:
+                    i += 1
+                    # print('Assessing %s row %d' % (table_name, i))
 
-        session.run(cmd)
+                    cmd = "MATCH (s:%s),(t:%s) WHERE s.im_id = '%d' AND t.im_id = '%d' CREATE (s)-[:%s]->(t)" \
+                        % (source_class, target_class,
+                           row[node['reverse-reference'].lower()], row[node['name'].lower()], node['name'])
+
+                    """
+                    if path == 'Gene.proteins':
+                        print(cmd)
+                    """
+
+                    session.run(cmd)

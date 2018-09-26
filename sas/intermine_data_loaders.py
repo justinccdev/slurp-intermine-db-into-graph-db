@@ -1,3 +1,7 @@
+def get_collection_table_name(node):
+    return '%s%s' % (node['reverse-reference'], node['name'])
+
+
 def get_referenced_im_ids(curs, source_type, source_im_ids, referenced_type, intermine_model):
     referenced_im_ids = []
 
@@ -15,7 +19,7 @@ def get_referenced_im_ids(curs, source_type, source_im_ids, referenced_type, int
                 referenced_im_ids.append(str(curs.fetchone()[column_name]))
 
             elif node['type'] == 'collection':
-                table_name = '%s%s' % (node['reverse-reference'], node['name'])
+                table_name = get_collection_table_name(node)
                 curs.execute(
                     'SELECT %s FROM %s WHERE %s=%s' % (node['name'], table_name, node['reverse-reference'], im_id))
 
