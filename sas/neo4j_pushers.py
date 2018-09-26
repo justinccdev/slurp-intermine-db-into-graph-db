@@ -48,15 +48,16 @@ def add_relationships(curs, session, restrictions):
     Add relationships between entities
     :param conn:
     :param session:
+    :param restrictions:
     :return:
     """
 
     print('Adding Gene->Organism relationships')
-    session.run("MATCH (g:Gene),(o:Organism) WHERE g.internal_organism_id = o.im_id CREATE (g)-[:organism]->(o)")
+    session.run("MATCH (g:Gene),(o:Organism) WHERE g.organismid = o.im_id CREATE (g)-[:organism]->(o)")
 
     print('Adding Gene->SOTerm relationsihps')
     session.run(
-        "MATCH (g:Gene),(s:SOTerm) WHERE g.internal_soterm_id = s.im_id CREATE (g)-[:sequenceOntologyTerm]->(s)")
+        "MATCH (g:Gene),(s:SOTerm) WHERE g.sequenceontologytermid = s.im_id CREATE (g)-[:sequenceOntologyTerm]->(s)")
 
     print('Adding Gene->Protein relationships')
 
