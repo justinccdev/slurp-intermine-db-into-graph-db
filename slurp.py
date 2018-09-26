@@ -38,21 +38,9 @@ with \
             curs.execute('SELECT * FROM gene where secondaryidentifier=%s', (args.gene, ))
             restrictions['Gene'] = [str(curs.fetchone()['id'])]
 
-            restrictions['Protein'] = []
-            paths = list(filter(lambda k: k.startswith('Gene.'), intermine_model.keys()))
-            referenced_type_paths \
-                = list(filter(lambda k: intermine_model[k].get('referenced-type') == 'Protein', paths))
-
-            for im_id in restrictions['Gene']:
-                nodes = [intermine_model[path] for path in referenced_type_paths]
-                for node in nodes:
-                    if node['type'] == 'collection':
-                        table_name = '%s%s' % (node['reverse-reference'], node['name'])
-                        curs.execute(
-                            'SELECT %s FROM %s WHERE %s=%s' % (node['name'], table_name, node['reverse-reference'], im_id))
-
-                        for row in curs:
-                            restrictions['Protein'].append(str(row[node['name']]))
+            restrictions['Protein'] \
+                = sas.intermine_data_loaders.get_im_ids_for_referenced_type(
+                    curs, 'Gene', restrictions['Gene'], 'Protein', intermine_model)
 
             restrictions['Organism'] = []
             restrictions['SOTerm'] = []
