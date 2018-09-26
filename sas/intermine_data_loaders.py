@@ -1,4 +1,13 @@
 def map_rows_to_dicts(curs, _type, _map, restriction_list=None):
+    """
+    Map rows from the InterMine database into dictionaries
+
+    :param curs:
+    :param _type:
+    :param _map:
+    :param restriction_list:
+    :return:
+    """
     entities = {}
 
     cmd = 'SELECT * FROM %s' % _type
