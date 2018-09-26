@@ -14,10 +14,10 @@ intermine_to_neo4j_map = sas.config_loaders.load_intermine_to_neo4j_map('config/
 
 # If we are going to restrict the intermine entities that we map to neo4j, this is where we would do it
 restrictions = {
-    'gene': None,
-    'organism': None,
-    'protein': None,
-    'soterm': None
+    'Gene': None,
+    'Organism': None,
+    'Protein': None,
+    'SOTerm': None
 }
 
 parser = argparse.ArgumentParser('Slurp InterMine data into Neo4J')
@@ -33,16 +33,16 @@ with \
         # TODO: This is extremely crude and needs major refinement
         if args.gene is not None:
             curs.execute('SELECT * FROM gene where secondaryidentifier=%s', (args.gene, ))
-            restrictions['gene'] = [str(curs.fetchone()['id'])]
+            restrictions['Gene'] = [str(curs.fetchone()['id'])]
 
-            restrictions['protein'] = []
-            for im_id in restrictions['gene']:
+            restrictions['Protein'] = []
+            for im_id in restrictions['Gene']:
                 curs.execute('SELECT proteins FROM genesproteins WHERE genes=%s', (im_id,))
                 for row in curs:
-                    restrictions['protein'].append(str(row['proteins']))
+                    restrictions['Protein'].append(str(row['proteins']))
 
-            restrictions['organism'] = []
-            restrictions['soterm'] = []
+            restrictions['Organism'] = []
+            restrictions['SOTerm'] = []
 
             print(restrictions)
 
@@ -54,4 +54,4 @@ with \
                     sas.intermine_data_loaders.map_rows_to_dicts(
                         curs, intermine_class, _map, restrictions[intermine_class]))
 
-            sas.neo4j_pushers.add_relationships(curs, session, restrictions['gene'])
+            sas.neo4j_pushers.add_relationships(curs, session, restrictions['Gene'])
