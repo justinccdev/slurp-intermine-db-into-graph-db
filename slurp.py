@@ -33,7 +33,7 @@ with \
     psycopg2.connect(dbname='synbiomine-v5-poc4', user='justincc', cursor_factory=psycopg2.extras.DictCursor) as conn, \
     neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'passw0rd')) as driver, \
         conn.cursor() as curs:
-        # TODO: This is extremely crude and needs major refinement
+
         if args.gene is not None:
             curs.execute('SELECT * FROM gene where secondaryidentifier=%s', (args.gene, ))
             restrictions['Gene'] = [str(curs.fetchone()['id'])]
@@ -42,8 +42,13 @@ with \
                 = sas.intermine_data_loaders.get_im_ids_for_referenced_type(
                     curs, 'Gene', restrictions['Gene'], 'Protein', intermine_model)
 
-            restrictions['Organism'] = []
-            restrictions['SOTerm'] = []
+            restrictions['Organism'] \
+                = sas.intermine_data_loaders.get_im_ids_for_referenced_type(
+                    curs, 'Gene', restrictions['Gene'], 'Organism', intermine_model)
+
+            restrictions['SOTerm'] \
+                = sas.intermine_data_loaders.get_im_ids_for_referenced_type(
+                    curs, 'Gene', restrictions['Gene'], 'SOTerm', intermine_model)
 
             print(restrictions)
 

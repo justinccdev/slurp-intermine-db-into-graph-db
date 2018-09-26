@@ -1,5 +1,5 @@
 def get_im_ids_for_referenced_type(curs, source_type, source_im_ids, referenced_type, intermine_model):
-    im_ids = []
+    referenced_im_ids = []
 
     paths = list(filter(lambda k: k.startswith('%s.' % source_type), intermine_model.keys()))
     referenced_type_paths \
@@ -8,15 +8,21 @@ def get_im_ids_for_referenced_type(curs, source_type, source_im_ids, referenced_
     for im_id in source_im_ids:
         nodes = [intermine_model[path] for path in referenced_type_paths]
         for node in nodes:
-            if node['type'] == 'collection':
+            if node['type'] == 'reference':
+                table_name = source_type.lower()
+                column_name = '%sid' % node['name'].lower()
+                curs.execute('SELECT %s FROM %s WHERE id=%s' % (column_name, table_name, im_id))
+                referenced_im_ids.append(str(curs.fetchone()[column_name]))
+
+            elif node['type'] == 'collection':
                 table_name = '%s%s' % (node['reverse-reference'], node['name'])
                 curs.execute(
                     'SELECT %s FROM %s WHERE %s=%s' % (node['name'], table_name, node['reverse-reference'], im_id))
 
                 for row in curs:
-                    im_ids.append(str(row[node['name']]))
+                    referenced_im_ids.append(str(row[node['name']]))
 
-    return im_ids
+    return referenced_im_ids
 
 
 def map_rows_to_dicts(curs, _type, _map, restriction_list=None):
