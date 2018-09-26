@@ -43,7 +43,7 @@ def add_entities(session, _type, entities):
         session.run(cmd)
 
 
-def add_relationships(curs, session, restriction_list):
+def add_relationships(curs, session, restrictions):
     """
     Add relationships between entities
     :param conn:
@@ -62,12 +62,12 @@ def add_relationships(curs, session, restriction_list):
 
     cmd = 'SELECT * from genesproteins'
 
-    if restriction_list is not None:
-        if not restriction_list:
+    if restrictions is not None:
+        if not restrictions:
             return {}
 
-        print(','.join(restriction_list))
-        cmd += ' WHERE genes IN (%s)' % ','.join(restriction_list)
+        print(','.join(restrictions))
+        cmd += ' WHERE genes IN (%s)' % ','.join(restrictions)
 
     curs.execute(cmd)
 
