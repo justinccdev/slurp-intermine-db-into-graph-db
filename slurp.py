@@ -29,7 +29,7 @@ args = parser.parse_args()
 with \
     psycopg2.connect(dbname='synbiomine-v5-poc4', user='justincc', cursor_factory=psycopg2.extras.DictCursor) as conn, \
     neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'passw0rd')) as driver, \
-    conn.cursor() as curs:
+        conn.cursor() as curs:
         # TODO: This is extremely crude and needs major refinement
         if args.gene is not None:
             curs.execute('SELECT * FROM gene where secondaryidentifier=%s', (args.gene, ))
@@ -48,10 +48,10 @@ with \
 
         with driver.session() as session:
             for intermine_class, _map in intermine_to_neo4j_map['@maps'].items():
-                 sas.neo4j_pushers.add_entities(
-                     session,
-                     intermine_class,
-                     sas.intermine_data_loaders.map_rows_to_dicts(
-                         curs, intermine_class, _map, restrictions[intermine_class]))
+                sas.neo4j_pushers.add_entities(
+                    session,
+                    intermine_class,
+                    sas.intermine_data_loaders.map_rows_to_dicts(
+                        curs, intermine_class, _map, restrictions[intermine_class]))
 
             sas.neo4j_pushers.add_relationships(curs, session, restrictions['gene'])
