@@ -63,22 +63,22 @@ def add_relationships(curs, session, source_class, target_classes, intermine_mod
 
         paths = filter(lambda k: k.startswith('%s.' % source_class), intermine_model.keys())
         for path in sorted(paths):
-            print('Processing path %s' % path)
+            # print('Processing path %s' % path)
 
             node = intermine_model[path]
             if node.get('referenced-type') != target_class:
                 continue
 
-            if node['type'] == 'reference':
+            if node['flavour'] == 'reference':
                 column_name = '%sid' % node['name'].lower()
 
                 cmd = "MATCH (s:%s),(t:%s) WHERE s.%s = t.im_id CREATE (s)-[:%s]->(t)" \
                       % (source_class, target_class, column_name, node['name'])
 
-                # print(cmd)
+                print(cmd)
                 session.run(cmd)
 
-            elif node['type'] == 'collection':
+            elif node['flavour'] == 'collection':
                 if 'reverse-reference' not in node:
                     print('No reverse-reference for %s to build table name. Skipping' % path)
                     continue

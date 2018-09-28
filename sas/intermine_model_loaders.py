@@ -30,7 +30,6 @@ def load_model(model_path):
     :return:
     """
     xml_tree = etree.parse(model_path)
-    # model_package = xml_tree.xpath('//model/@package')[0]
 
     model_nodes = {}
 
@@ -39,16 +38,15 @@ def load_model(model_path):
         attrib = _class.attrib
         class_name = attrib['name']
 
-        model_nodes[class_name] = {'type': 'class'}
+        model_nodes[class_name] = {'flavour': 'class'}
         if 'term' in attrib:
-            # model_terms[model_class] = attrib['term']
             model_nodes[class_name]['term'] = attrib['term']
 
         for _property in xml_tree.xpath("//class[@name='%s']/*" % class_name):
             attrib = _property.attrib
 
             model_path = '%s.%s' % (class_name, attrib['name'])
-            model_nodes[model_path] = {'type': _property.tag }
+            model_nodes[model_path] = {'flavour': _property.tag }
 
             # Get all the other XML attribs in case we need them later. It will be impossible for any to have the same
             # name as the model_path since XML attribs can't contain periods.
@@ -89,8 +87,10 @@ def load_model(model_path):
 
     # print(model_nodes)
 
+    """
     for k, v in sorted(model_nodes.items()):
         print('Model term (%s,%s)' % (k, v))
+    """
 
 
     return model_nodes

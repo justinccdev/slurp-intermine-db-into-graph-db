@@ -7,17 +7,16 @@
     "@maps": {
         "Gene": {
             "#": "This is a hack because the primary identifier is not an accession number and the actual ncbigene ID is not captured by Synbiomine",
-            "secondaryidentifier": "id",
-            "primaryidentifier": "name"
+            "secondaryIdentifier": "id",
+            "primaryIdentifier": "name"
         },
 
         "Organism": {
-            "taxonid": "id",
-            "class": "type"
+            "taxonId": "id"
         },
 
         "Protein": {
-            "primaryaccession": "id"
+            "primaryAccession": "id"
         },
 
         "SOTerm": {

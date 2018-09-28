@@ -29,14 +29,13 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
         pos = []
         subjects[subject_name] = pos
 
-        node_type = node['type'].rpartition('.')[2]
-
-        sas.rdf_creators.process_node_properties(node, node_type, model_terms, rdf_prefixes, prefixes_used, pos)
+        class_name = node['type'].rpartition('.')[2]
+        sas.rdf_creators.process_node_properties(node, class_name, model_terms, rdf_prefixes, prefixes_used, pos)
 
         # look for relationships
         result = session.run("MATCH (g:Gene {id:'%s'})-[r]-(b) RETURN type(r), b" % args.id)
 
         sas.rdf_creators.process_node_relationships(
-            result, node_type, model_terms, rdf_prefixes, prefixes_used, fair_prefixes, pos)
+            result, class_name, model_terms, rdf_prefixes, prefixes_used, fair_prefixes, pos)
 
 print(sas.rdf_creators.create_rdf_output(rdf_prefixes, prefixes_used, subjects), end='')

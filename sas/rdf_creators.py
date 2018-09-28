@@ -6,7 +6,7 @@ def create_node_fair_uri(node, fair_prefixes):
     :param fair_prefixes
     :return:
     """
-    prefix = fair_prefixes.get(node['type'], 'unknown')
+    prefix = fair_prefixes.get(node['node-type'], 'unknown')
 
     return 'http://synbiomine.org/%s:%s' % (prefix, node['id'])
 
@@ -53,8 +53,8 @@ def process_node_properties(node, node_type, model_nodes, rdf_prefixes, prefixes
     :param pos:
     :return:
     """
-    for key, value in node.items():
-        # print('KEY-VALUE: %s,%s' % (key, value))
+    for key, value in sorted(node.items()):
+        print('KEY-VALUE: %s,%s' % (key, value))
 
         if key == 'type':
             term = model_nodes.get(node_type).get('term')
@@ -95,6 +95,7 @@ def process_node_relationships(relationships, node_type, model_nodes, rdf_prefix
     """
     for record in relationships:
         predicate = record['type(r)']
+        print(predicate)
         term = model_nodes.get('%s.%s' % (node_type, predicate)).get('term')
 
         if term is not None:
