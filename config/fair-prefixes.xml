@@ -1,6 +1,6 @@
 <prefixes>
-    <prefix type="org.intermine.model.bio.Gene"     prefix="ecogene"/>
-    <prefix type="org.intermine.model.bio.Organism" prefix="taxonomy"/>
-    <prefix type="org.intermine.model.bio.Protein"  prefix="uniprot"/>
-    <prefix type="org.intermine.model.bio.SOTerm"   prefix="so"/>
+    <prefix type="org.intermine.model.bio.Gene"     prefix="gene"/>
+    <prefix type="org.intermine.model.bio.Organism" prefix="organism"/>
+    <prefix type="org.intermine.model.bio.Protein"  prefix="protein"/>
+    <prefix type="org.intermine.model.bio.SOTerm"   prefix="soterm"/>
 </prefixes>
