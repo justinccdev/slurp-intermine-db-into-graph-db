@@ -43,7 +43,7 @@
 </class>
 <class name="PointMutation" extends="Region" is-interface="true"></class>
 <class name="Gene" extends="Region" is-interface="true" term="http://semanticscience.org/resource/SIO_010035">
-	<attribute name="briefDescription" type="java.lang.String"/>
+	<attribute name="briefDescription" type="java.lang.String" term="http://semanticscience.org/resource/SIO_000136"/>
 	<attribute name="description" type="java.lang.String" term="http://semanticscience.org/resource/SIO_000136"/>
 	<reference name="upstreamIntergenicRegion" referenced-type="IntergenicRegion"/>
 	<reference name="downstreamIntergenicRegion" referenced-type="IntergenicRegion"/>
