@@ -42,12 +42,12 @@ def get_rdf_for_triple_part(part, prefixes):
     return part
 
 
-def process_node_properties(node, node_type, model_nodes, rdf_prefixes, prefixes_used, pos):
+def process_node_properties(node, node_type, intermine_model, rdf_prefixes, prefixes_used, pos):
     """
     Process the properties of a graph node
     :param node:
     :param node_type:
-    :param model_nodes:
+    :param intermine_model:
     :param rdf_prefixes:
     :param prefixes_used:
     :param pos:
@@ -57,16 +57,16 @@ def process_node_properties(node, node_type, model_nodes, rdf_prefixes, prefixes
         print('KEY-VALUE: %s,%s' % (key, value))
 
         if key == 'type':
-            term = model_nodes.get(node_type).get('term')
+            term = intermine_model.get(node_type).get('term')
             p, o = 'a', term
         else:
             path = '%s.%s' % (node_type, key)
             print('Looking for path [%s]' % path)
 
-            node = model_nodes.get(path)
+            node = intermine_model.get(path)
 
             if not node is None:
-                term = model_nodes.get(path).get('term')
+                term = node.get('term')
             else:
                 term = None
 
@@ -81,12 +81,13 @@ def process_node_properties(node, node_type, model_nodes, rdf_prefixes, prefixes
             pos.append((p, o))
 
 
-def process_node_relationships(relationships, node_type, model_nodes, rdf_prefixes, prefixes_used, fair_prefixes, pos):
+def process_node_relationships(
+        relationships, intermine_class, intermine_model, rdf_prefixes, prefixes_used, fair_prefixes, pos):
     """
     Process the relationships of a graph node
     :param relationships:
-    :param node_type:
-    :param model_nodes:
+    :param intermine_class:
+    :param intermine_model:
     :param rdf_prefixes:
     :param prefixes_used:
     :param fair_prefixes:
@@ -96,7 +97,7 @@ def process_node_relationships(relationships, node_type, model_nodes, rdf_prefix
     for record in relationships:
         predicate = record['type(r)']
         print(predicate)
-        term = model_nodes.get('%s.%s' % (node_type, predicate)).get('term')
+        term = intermine_model.get('%s.%s' % (intermine_class, predicate)).get('term')
 
         if term is not None:
             prefix, _ = find_rdf_prefix(term, rdf_prefixes)

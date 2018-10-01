@@ -8,11 +8,11 @@ import psycopg2.extras
 import sas.config_loaders
 import sas.neo4j_pushers
 import sas.intermine_data_loaders
-import sas.intermine_model_loaders
+import sas.intermine_model
 
 
 intermine_to_neo4j_map = sas.config_loaders.load_intermine_to_neo4j_map('config/intermine_to_neo4j_map.json')
-intermine_model = sas.intermine_model_loaders.load_model('intermine/genomic_model.xml')
+intermine_model = sas.intermine_model.InterMineModel('intermine/genomic_model.xml')
 
 # If we are going to restrict the intermine entities that we map to neo4j, this is where we would do it
 restrictions = {

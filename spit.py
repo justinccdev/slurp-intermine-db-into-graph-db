@@ -4,7 +4,7 @@ import argparse
 
 import neo4j.v1
 
-import sas.intermine_model_loaders
+import sas.intermine_model
 import sas.config_loaders
 import sas.rdf_creators
 
@@ -14,7 +14,7 @@ args = parser.parse_args()
 
 fair_prefixes = sas.config_loaders.load_fair_prefixes('config/fair-prefixes.xml')
 rdf_prefixes = sas.config_loaders.load_rdf_prefixes('config/rdf-prefixes.xml')
-model_terms = sas.intermine_model_loaders.load_model('intermine/genomic_model.xml')
+intermine_model = sas.intermine_model.InterMineModel('intermine/genomic_model.xml')
 
 prefixes_used = set()
 subjects = {}
@@ -30,12 +30,12 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
         subjects[subject_name] = pos
 
         class_name = node['type'].rpartition('.')[2]
-        sas.rdf_creators.process_node_properties(node, class_name, model_terms, rdf_prefixes, prefixes_used, pos)
+        sas.rdf_creators.process_node_properties(node, class_name, intermine_model, rdf_prefixes, prefixes_used, pos)
 
         # look for relationships
         result = session.run("MATCH (g:Gene {id:'%s'})-[r]-(b) RETURN type(r), b" % args.id)
 
         sas.rdf_creators.process_node_relationships(
-            result, class_name, model_terms, rdf_prefixes, prefixes_used, fair_prefixes, pos)
+            result, class_name, intermine_model, rdf_prefixes, prefixes_used, fair_prefixes, pos)
 
 print(sas.rdf_creators.create_rdf_output(rdf_prefixes, prefixes_used, subjects), end='')

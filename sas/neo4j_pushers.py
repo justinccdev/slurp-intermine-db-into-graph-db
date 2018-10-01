@@ -61,7 +61,7 @@ def add_relationships(curs, session, source_class, target_classes, intermine_mod
     for target_class in target_classes:
         print('Adding %s->%s relationships' % (source_class, target_class))
 
-        paths = filter(lambda k: k.startswith('%s.' % source_class), intermine_model.keys())
+        paths = intermine_model.get_paths_for_class(source_class)
         for path in sorted(paths):
             # print('Processing path %s' % path)
 
