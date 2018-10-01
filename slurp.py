@@ -44,14 +44,15 @@ with \
             for row in curs:
                 restrictions['Gene'].add(str(row['id']))
 
-        if len(restrictions['Gene']) > 0:
-            for referenced_type in intermine_model.get_classes():
-                restrictions[referenced_type] \
-                    = sas.intermine_data_loaders.get_referenced_im_ids(
-                        curs, 'Gene', restrictions['Gene'], referenced_type, intermine_model)
-                print('For %s got %s' % (referenced_type, restrictions[referenced_type]))
+        for intermine_class, ids in restrictions.copy().items():
+            if len(ids) > 0:
+                for referenced_type in intermine_model.get_classes():
+                    restrictions[referenced_type] \
+                        = sas.intermine_data_loaders.get_referenced_im_ids(
+                            curs, intermine_class, ids, referenced_type, intermine_model)
+                    print('For %s got %s' % (referenced_type, restrictions[referenced_type]))
 
-            print(restrictions)
+        print(restrictions)
 
         with driver.session() as session:
             for intermine_class in intermine_model.get_classes():
