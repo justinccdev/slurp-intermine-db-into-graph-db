@@ -21,7 +21,8 @@ def get_collection_table_name(node, intermine_model):
     if 'reverse-reference' in node:
         reverse_reference_name = node['reverse-reference'].lower()
     else:
-        reverse_reference_name = node['referenced-type'].lower()
+        # reverse_reference_name = node['referenced-type'].lower()
+        reverse_reference_name = node['class'].lower()
 
     part2 = reverse_reference_name
 
@@ -45,19 +46,23 @@ def get_referenced_im_ids(curs, source_class, source_im_ids, referenced_class, i
     """
     # print('Looking for %s referencing %s' % (source_class, referenced_class))
 
-    referenced_im_ids = set(source_im_ids)
+    if source_class == referenced_class:
+        referenced_im_ids = set(source_im_ids)
+    else:
+        referenced_im_ids = set()
+
     referenced_type_paths = intermine_model.get_paths_for_class_referencing_type(source_class, referenced_class)
-    print(referenced_type_paths)
+    # print(referenced_type_paths)
 
     for im_id in source_im_ids:
         nodes = [intermine_model[path] for path in referenced_type_paths]
         for node in nodes:
-            print(node)
+            # print(node)
             if node['flavour'] == 'reference':
                 table_name = source_class.lower()
                 column_name = '%sid' % node['name'].lower()
                 cmd = 'SELECT %s FROM %s WHERE id=%s' % (column_name, table_name, im_id)
-                print(cmd)
+                # print(cmd)
                 curs.execute(cmd)
                 referenced_id = curs.fetchone()[column_name]
 
@@ -69,7 +74,7 @@ def get_referenced_im_ids(curs, source_class, source_im_ids, referenced_class, i
 
                 if table_name is not None:
                     cmd = 'SELECT %s FROM %s WHERE %s=%s' % (node['name'], table_name, ref_col_name, im_id)
-                    print(cmd)
+                    # print(cmd)
                     curs.execute(cmd)
 
                     for row in curs:
@@ -99,7 +104,7 @@ def map_rows_to_dicts(curs, intermine_class, intermine_to_neo4j_map, intermine_m
 
     # It's possible that some classes won't have tables because all their data is contained in other tables
     cmd = "SELECT exists(SELECT * from information_schema.tables WHERE table_name='%s')" % intermine_class_table_name
-    print(cmd)
+    # print(cmd)
     curs.execute(cmd)
     # print(curs.fetchone()[0])
     if not curs.fetchone()[0]:
@@ -115,10 +120,10 @@ def map_rows_to_dicts(curs, intermine_class, intermine_to_neo4j_map, intermine_m
         if not restriction_list:
             return {}
 
-        print(','.join(restriction_list))
+        # print(','.join(restriction_list))
         cmd += ' AND o.id IN (%s)' % ','.join(restriction_list)
 
-    print(cmd)
+    # print(cmd)
     curs.execute(cmd)
 
     attrs = intermine_model.get_attributes_for_class(intermine_class)
@@ -138,7 +143,7 @@ def map_rows_to_dicts(curs, intermine_class, intermine_to_neo4j_map, intermine_m
             if lc_attr in row:
                 if attr in _map:
                     attr = _map[attr]
-                    print('Transformed to %s' % attr)
+                    # print('Transformed to %s' % attr)
 
                 if attr is not None:
                     entity[attr] = row[lc_attr]
@@ -149,6 +154,6 @@ def map_rows_to_dicts(curs, intermine_class, intermine_to_neo4j_map, intermine_m
 
         entities[row['id']] = entity
 
-        print(entity)
+        # print(entity)
 
     return entities

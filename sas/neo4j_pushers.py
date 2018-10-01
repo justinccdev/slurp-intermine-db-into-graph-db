@@ -19,7 +19,7 @@ def add_entities(session, _type, entities):
     for im_id, entity in entities.items():
         i += 1
 
-        print('Processing %d of %d %s' % (i, len(entities), _type))
+        # print('Processing %d of %d %s' % (i, len(entities), _type))
 
         # print(entity)
 
@@ -59,13 +59,15 @@ def add_relationships(curs, session, source_class, target_classes, intermine_mod
     """
 
     for target_class in target_classes:
-        # print('Adding %s->%s relationships' % (source_class, target_class))
+        print('Adding %s->%s relationships' % (source_class, target_class))
 
         paths = intermine_model.get_paths_for_class(source_class)
         for path in sorted(paths):
-            # print('Processing path %s' % path)
 
             node = intermine_model[path]
+
+            # print('Processing node %s' % node)
+
             if node.get('referenced-type') != target_class:
                 continue
 
@@ -75,7 +77,7 @@ def add_relationships(curs, session, source_class, target_classes, intermine_mod
                 cmd = "MATCH (s:%s),(t:%s) WHERE s.%s = t.im_id CREATE (s)-[:%s]->(t)" \
                       % (source_class, target_class, column_name, node['name'])
 
-                print(cmd)
+                # print(cmd)
                 session.run(cmd)
 
             elif node['flavour'] == 'collection':
@@ -93,6 +95,7 @@ def add_relationships(curs, session, source_class, target_classes, intermine_mod
                     print('Table %s for adding relationships does not exist. Skipping' % table_name)
                     continue
 
+                """
                 cmd = 'SELECT * from %s' % table_name
 
                 if restrictions is not None:
@@ -104,6 +107,20 @@ def add_relationships(curs, session, source_class, target_classes, intermine_mod
 
                 # print(cmd)
                 curs.execute(cmd)
+                """
+
+                # TODO: Need to replace o.id and i.id with the proper class names
+                cmd = "SELECT * FROM %s AS o, intermineobject AS i WHERE o.%s = i.id AND i.class = 'org.intermine.model.bio.%s'" \
+                      % (table_name, node['reverse-reference'], source_class)
+
+                if restrictions is not None:
+                    if not restrictions:
+                        continue
+
+                    # print(','.join(restriction_list))
+                    cmd += ' AND %s IN (%s)' % (node['reverse-reference'], ','.join(restrictions))
+
+                curs.execute(cmd)
 
                 i = 0
                 for row in curs:
@@ -113,10 +130,5 @@ def add_relationships(curs, session, source_class, target_classes, intermine_mod
                     cmd = "MATCH (s:%s),(t:%s) WHERE s.im_id = '%d' AND t.im_id = '%d' CREATE (s)-[:%s]->(t)" \
                         % (source_class, target_class,
                            row[node['reverse-reference'].lower()], row[node['name'].lower()], node['name'])
-
-                    """
-                    if path == 'Gene.proteins':
-                        print(cmd)
-                    """
 
                     session.run(cmd)

@@ -116,7 +116,9 @@ class InterMineModel:
                 model_path = '%s.%s' % (class_name, simple_path_name)
                 model_nodes[model_path] = node
 
+        """
         for k, v in sorted(model_nodes.items()):
             print('Model term (%s,%s)' % (k, v))
+        """
 
         return model_nodes

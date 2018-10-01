@@ -23,6 +23,7 @@ restrictions = {
 }
 
 parser = argparse.ArgumentParser('Slurp InterMine data into Neo4J')
+parser.add_argument('--depth', type=int, help='number of links to follow when slurping')
 parser.add_argument('--limit', type=int, help='limit number of genes slurped if no gene id is specified')
 parser.add_argument('gene', nargs='?')
 
@@ -44,15 +45,30 @@ with \
             for row in curs:
                 restrictions['Gene'].add(str(row['id']))
 
-        for intermine_class, ids in restrictions.copy().items():
-            if len(ids) > 0:
-                for referenced_type in intermine_model.get_classes():
-                    restrictions[referenced_type] \
-                        = sas.intermine_data_loaders.get_referenced_im_ids(
-                            curs, intermine_class, ids, referenced_type, intermine_model)
-                    print('For %s got %s' % (referenced_type, restrictions[referenced_type]))
+        if args.depth is not None:
+            depth = args.depth
+        else:
+            depth = 1
 
-        print(restrictions)
+        for i in range(2):
+            print('************ ROUND %d' % i)
+            for intermine_class, ids in restrictions.copy().items():
+                if len(ids) > 0:
+                    for referenced_class in intermine_model.get_classes():
+                        referenced_im_ids = sas.intermine_data_loaders.get_referenced_im_ids(
+                            curs, intermine_class, ids, referenced_class, intermine_model)
+
+                        print('For %s => %s got referenced IDs %s'
+                              % (intermine_class, referenced_class, referenced_im_ids))
+
+                        if referenced_class not in restrictions:
+                            restrictions[referenced_class] = set()
+
+                        restrictions[referenced_class] = restrictions[referenced_class].union(referenced_im_ids)
+
+                        print('For %s got %s' % (referenced_class, restrictions[referenced_class]))
+
+            print(restrictions)
 
         with driver.session() as session:
             for intermine_class in intermine_model.get_classes():
@@ -62,5 +78,8 @@ with \
                     sas.intermine_data_loaders.map_rows_to_dicts(
                         curs, intermine_class, intermine_to_neo4j_map, intermine_model, restrictions[intermine_class]))
 
-            sas.neo4j_pushers.add_relationships(
-                curs, session, 'Gene', intermine_model.get_classes(), intermine_model, restrictions['Gene'])
+            for intermine_class in intermine_model.get_classes():
+                print('Adding relationships for %s' % intermine_class)
+                sas.neo4j_pushers.add_relationships(
+                    curs, session, intermine_class, intermine_model.get_classes(),
+                    intermine_model, restrictions[intermine_class])
