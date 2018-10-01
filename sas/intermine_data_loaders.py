@@ -106,14 +106,15 @@ def map_rows_to_dicts(curs, intermine_class, intermine_to_neo4j_map, intermine_m
 
     _map = intermine_to_neo4j_map['@maps'].get(intermine_class, {})
 
-    cmd = 'SELECT * FROM %s' % intermine_class_table_name
+    cmd = "SELECT * FROM %s AS o, intermineobject AS i WHERE o.id = i.id AND i.class = 'org.intermine.model.bio.%s'" \
+          % (intermine_class_table_name, intermine_class)
 
     if restriction_list is not None:
         if not restriction_list:
             return {}
 
         print(','.join(restriction_list))
-        cmd += ' WHERE id IN (%s)' % ','.join(restriction_list)
+        cmd += ' AND o.id IN (%s)' % ','.join(restriction_list)
 
     print(cmd)
     curs.execute(cmd)
