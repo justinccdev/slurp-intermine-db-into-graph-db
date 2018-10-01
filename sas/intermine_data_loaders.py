@@ -1,37 +1,75 @@
-def get_collection_table_name(node):
-    return '%s%s' % (node['reverse-reference'], node['name'])
+def get_collection_table_name(node, intermine_model):
+    """
+    Get the table name for this collection
+
+    :param node:
+    :param intermine_model:
+    :return: (table-name, reference-column-name).  table-name will be null if there isn't a collection table for this node
+    """
+
+    if 'reverse-reference' in node:
+        referenced_path = '%s.%s' % (node['referenced-type'], node['reverse-reference'])
+        referenced_node = intermine_model.get(referenced_path)
+
+        # If the referenced node is an attribute then there will be no table
+        if referenced_node is not None and referenced_node['flavour'] != 'collection':
+            return None, None
+
+    part1 = node['name'].lower()
+
+    if 'reverse-reference' in node:
+        reverse_reference_name = node['reverse-reference'].lower()
+    else:
+        reverse_reference_name = node['referenced-type'].lower()
+
+    part2 = reverse_reference_name
+
+    # The first name in the alphabet is the first part of the table name
+    if part1 > part2:
+        part1, part2 = part2, part1
+
+    return part1 + part2, reverse_reference_name
 
 
-def get_referenced_im_ids(curs, source_class, source_im_ids, referenced_type, intermine_model):
+def get_referenced_im_ids(curs, source_class, source_im_ids, referenced_class, intermine_model):
     """
     Find all the intermine IDs referenced by a given set of intermine IDs
 
     :param curs:
     :param source_class:
     :param source_im_ids:
-    :param referenced_type:
+    :param referenced_class:
     :param intermine_model:
     :return:
     """
-    referenced_im_ids = []
-    referenced_type_paths = intermine_model.get_paths_for_class_referencing_type(source_class, referenced_type)
+    # print('Looking for %s referencing %s' % (source_class, referenced_class))
+
+    referenced_im_ids = set(source_im_ids)
+    referenced_type_paths = intermine_model.get_paths_for_class_referencing_type(source_class, referenced_class)
+    print(referenced_type_paths)
 
     for im_id in source_im_ids:
         nodes = [intermine_model[path] for path in referenced_type_paths]
         for node in nodes:
+            print(node)
             if node['flavour'] == 'reference':
                 table_name = source_class.lower()
                 column_name = '%sid' % node['name'].lower()
-                curs.execute('SELECT %s FROM %s WHERE id=%s' % (column_name, table_name, im_id))
-                referenced_im_ids.append(str(curs.fetchone()[column_name]))
+                cmd = 'SELECT %s FROM %s WHERE id=%s' % (column_name, table_name, im_id)
+                print(cmd)
+                curs.execute(cmd)
+                referenced_im_ids.add(str(curs.fetchone()[column_name]))
 
             elif node['flavour'] == 'collection':
-                table_name = get_collection_table_name(node)
-                curs.execute(
-                    'SELECT %s FROM %s WHERE %s=%s' % (node['name'], table_name, node['reverse-reference'], im_id))
+                table_name, ref_col_name = get_collection_table_name(node, intermine_model)
 
-                for row in curs:
-                    referenced_im_ids.append(str(row[node['name']]))
+                if table_name is not None:
+                    cmd = 'SELECT %s FROM %s WHERE %s=%s' % (node['name'], table_name, ref_col_name, im_id)
+                    print(cmd)
+                    curs.execute(cmd)
+
+                    for row in curs:
+                        referenced_im_ids.add(str(row[node['name'].lower()]))
 
     return referenced_im_ids
 
@@ -74,8 +112,6 @@ def map_rows_to_dicts(curs, intermine_class, _map, intermine_model, restriction_
                 lc_attr = attr.lower()
             else:
                 lc_attr = attr = '%sid' % attr.lower()
-
-            print('Looking for [%s, %s]' % (lc_attr, attr))
 
             if lc_attr in row:
                 if attr in _map:

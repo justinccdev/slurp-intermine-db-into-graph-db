@@ -59,7 +59,7 @@ def add_relationships(curs, session, source_class, target_classes, intermine_mod
     """
 
     for target_class in target_classes:
-        print('Adding %s->%s relationships' % (source_class, target_class))
+        # print('Adding %s->%s relationships' % (source_class, target_class))
 
         paths = intermine_model.get_paths_for_class(source_class)
         for path in sorted(paths):
@@ -83,7 +83,10 @@ def add_relationships(curs, session, source_class, target_classes, intermine_mod
                     print('No reverse-reference for %s to build table name. Skipping' % path)
                     continue
 
-                table_name = sas.intermine_data_loaders.get_collection_table_name(node)
+                table_name, _ = sas.intermine_data_loaders.get_collection_table_name(node, intermine_model)
+
+                if table_name is None:
+                    continue
 
                 curs.execute("SELECT to_regclass('%s')" % table_name)
                 if not curs.fetchone()[0]:

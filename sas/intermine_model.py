@@ -8,11 +8,17 @@ class InterMineModel:
     def __getitem__(self, path):
         return self._model[path]
 
+    def __contains__(self, path):
+        return path in self._model
+
     def get(self, path):
         return self._model.get(path)
 
     def keys(self):
         return self._model.keys()
+
+    def get_classes(self):
+        return sorted(set([p.partition('.')[0] for p in self._model.keys()]))
 
     def get_paths_for_class(self, _class):
         return sorted(list(filter(lambda k: k.startswith('%s.' % _class), self.keys())))
@@ -62,7 +68,7 @@ class InterMineModel:
             attrib = _class.attrib
             class_name = attrib['name']
 
-            model_nodes[class_name] = {'flavour': 'class'}
+            model_nodes[class_name] = {'flavour': 'class', 'class':class_name}
             if 'term' in attrib:
                 model_nodes[class_name]['term'] = attrib['term']
 
@@ -70,7 +76,7 @@ class InterMineModel:
                 attrib = _property.attrib
 
                 model_path = '%s.%s' % (class_name, attrib['name'])
-                model_nodes[model_path] = {'flavour': _property.tag}
+                model_nodes[model_path] = {'flavour': _property.tag, 'class':class_name}
 
                 # Get all the other XML attribs in case we need them later.
                 # It will be impossible for any to have the same name as the model_path
@@ -94,9 +100,9 @@ class InterMineModel:
                 for parent in parents:
                     paths.extend(get_ancestor_paths(parent))
 
-            for _term in model_nodes:
-                if _term.startswith(_class) and _term != _class:
-                    paths.append(_term)
+            for node in model_nodes:
+                if node.startswith('%s.' % _class) and node != _class:
+                    paths.append(node)
 
             return paths
 
@@ -110,11 +116,7 @@ class InterMineModel:
                 model_path = '%s.%s' % (class_name, simple_path_name)
                 model_nodes[model_path] = node
 
-        # print(model_nodes)
-
-        """
         for k, v in sorted(model_nodes.items()):
             print('Model term (%s,%s)' % (k, v))
-        """
 
         return model_nodes

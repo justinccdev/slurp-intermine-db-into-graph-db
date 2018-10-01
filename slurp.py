@@ -28,6 +28,8 @@ parser.add_argument('gene', nargs='?')
 
 args = parser.parse_args()
 
+print(intermine_model.get_classes())
+
 with \
     psycopg2.connect(dbname='synbiomine-v5-poc4', user='justincc', cursor_factory=psycopg2.extras.DictCursor) as conn, \
     neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'passw0rd')) as driver, \
@@ -35,12 +37,13 @@ with \
 
         if args.gene is not None:
             curs.execute('SELECT * FROM gene where secondaryidentifier=%s', (args.gene, ))
-            restrictions['Gene'] = [str(curs.fetchone()['id'])]
+            restrictions['Gene'] = set([str(curs.fetchone()['id'])])
 
-            for referenced_type in ('Protein', 'Organism', 'SOTerm'):
+            for referenced_type in intermine_model.get_classes():
                 restrictions[referenced_type] \
                     = sas.intermine_data_loaders.get_referenced_im_ids(
                         curs, 'Gene', restrictions['Gene'], referenced_type, intermine_model)
+                print('For %s got %s' % (referenced_type, restrictions[referenced_type]))
 
             print(restrictions)
 
@@ -59,4 +62,4 @@ with \
                         curs, intermine_class, _map, intermine_model, restrictions[intermine_class]))
 
             sas.neo4j_pushers.add_relationships(
-                curs, session, 'Gene', ('Protein', 'Organism', 'SOTerm'), intermine_model, restrictions['Gene'])
+                curs, session, 'Gene', intermine_model.get_classes(), intermine_model, restrictions['Gene'])
