@@ -16,14 +16,14 @@ intermine_model = sas.intermine_model.InterMineModel('intermine/genomic_model.xm
 
 # If we are going to restrict the intermine entities that we map to neo4j, this is where we would do it
 restrictions = {
-    'Gene': None,
-    'Organism': None,
-    'Protein': None,
-    'SOTerm': None
+    'Gene': set(),
+    'Organism': set(),
+    'Protein': set(),
+    'SOTerm': set()
 }
 
 parser = argparse.ArgumentParser('Slurp InterMine data into Neo4J')
-# parser.add_argument('--limit', type=int, help='limit number of genes slurped for quicker testing')
+parser.add_argument('--limit', type=int, help='limit number of genes slurped if no gene id is specified')
 parser.add_argument('gene', nargs='?')
 
 args = parser.parse_args()
@@ -36,9 +36,15 @@ with \
         conn.cursor() as curs:
 
         if args.gene is not None:
-            curs.execute('SELECT * FROM gene where secondaryidentifier=%s', (args.gene, ))
-            restrictions['Gene'] = set([str(curs.fetchone()['id'])])
+            curs.execute('SELECT id FROM gene where secondaryidentifier=%s', (args.gene, ))
+            restrictions['Gene'].add(str(curs.fetchone()['id']))
+        elif args.limit is not None:
+            cmd = 'SELECT id FROM gene LIMIT %d' % args.limit
+            curs.execute(cmd)
+            for row in curs:
+                restrictions['Gene'].add(str(row['id']))
 
+        if len(restrictions['Gene']) > 0:
             for referenced_type in intermine_model.get_classes():
                 restrictions[referenced_type] \
                     = sas.intermine_data_loaders.get_referenced_im_ids(
