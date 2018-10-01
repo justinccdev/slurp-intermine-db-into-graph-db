@@ -11,8 +11,8 @@ class InterMineModel:
     def get(self, path):
         return self._model.get(path)
 
-    def get_attributes_for_class(self, _class):
-        return [p.partition('.')[2] for p in self._model if p.startswith('%s.' % _class)]
+    def keys(self):
+        return self._model.keys()
 
     def get_paths_for_class(self, _class):
         return sorted(list(filter(lambda k: k.startswith('%s.' % _class), self.keys())))
@@ -22,8 +22,8 @@ class InterMineModel:
             filter(
                 lambda k: self._model[k].get('referenced-type') == referenced_type, self.get_paths_for_class(_class))))
 
-    def keys(self):
-        return self._model.keys()
+    def get_attributes_for_class(self, _class):
+        return sorted(list([p.partition('.')[2] for p in self._model if p.startswith('%s.' % _class)]))
 
     @staticmethod
     def _build_class_tree_from_xml_tree(xml_tree):
