@@ -55,13 +55,6 @@ with \
 
         with driver.session() as session:
             for intermine_class in intermine_model.get_classes():
-            # for intermine_class, _map in intermine_to_neo4j_map['@maps'].items():
-
-                # Put the generic keys in every class map.
-                # _map.update(
-                #     {('%s.%s' % (intermine_class, k)):v for (k, v) in intermine_to_neo4j_map['@general'].items()})
-                # print(_map)
-
                 sas.neo4j_pushers.add_entities(
                     session,
                     intermine_class,
