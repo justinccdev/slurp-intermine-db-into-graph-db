@@ -4,7 +4,8 @@ def get_collection_table_name(node, intermine_model):
 
     :param node:
     :param intermine_model:
-    :return: (table-name, reference-column-name).  table-name will be null if there isn't a collection table for this node
+    :return: (table-name, reference-column-name).
+        table-name will be null if there isn't a collection table for this node
     """
 
     if 'reverse-reference' in node:
@@ -85,7 +86,8 @@ def map_rows_to_dicts(curs, intermine_class, intermine_to_neo4j_map, intermine_m
 
     :param curs: Postgres cursor
     :param intermine_class:
-    :param _map: Map of InterMine class property names to Neo4J property names, where this translation is necessary.
+    :param intermine_to_neo4j_map: Map of InterMine class property names to Neo4J property names,
+        where this translation is necessary.
     :param intermine_model
     :param restriction_list: List of intermine IDs to push into Neo4J. If None then all IDs for that class are pushed.
     :return:
