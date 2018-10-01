@@ -98,7 +98,7 @@ def map_rows_to_dicts(curs, intermine_class, intermine_to_neo4j_map, intermine_m
     intermine_class_table_name = intermine_class.lower()
 
     # It's possible that some classes won't have tables because all their data is contained in other tables
-    cmd = "select exists(select * from information_schema.tables where table_name='%s')" % intermine_class_table_name
+    cmd = "SELECT exists(SELECT * from information_schema.tables WHERE table_name='%s')" % intermine_class_table_name
     print(cmd)
     curs.execute(cmd)
     # print(curs.fetchone()[0])
