@@ -48,7 +48,8 @@ with \
             print(restrictions)
 
         with driver.session() as session:
-            for intermine_class, _map in intermine_to_neo4j_map['@maps'].items():
+            for intermine_class in intermine_model.get_classes():
+            # for intermine_class, _map in intermine_to_neo4j_map['@maps'].items():
 
                 # Put the generic keys in every class map.
                 # _map.update(
@@ -59,7 +60,7 @@ with \
                     session,
                     intermine_class,
                     sas.intermine_data_loaders.map_rows_to_dicts(
-                        curs, intermine_class, _map, intermine_model, restrictions[intermine_class]))
+                        curs, intermine_class, intermine_to_neo4j_map, intermine_model, restrictions[intermine_class]))
 
             sas.neo4j_pushers.add_relationships(
                 curs, session, 'Gene', intermine_model.get_classes(), intermine_model, restrictions['Gene'])

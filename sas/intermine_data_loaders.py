@@ -58,7 +58,10 @@ def get_referenced_im_ids(curs, source_class, source_im_ids, referenced_class, i
                 cmd = 'SELECT %s FROM %s WHERE id=%s' % (column_name, table_name, im_id)
                 print(cmd)
                 curs.execute(cmd)
-                referenced_im_ids.add(str(curs.fetchone()[column_name]))
+                referenced_id = curs.fetchone()[column_name]
+
+                if referenced_id is not None:
+                    referenced_im_ids.add(str(referenced_id))
 
             elif node['flavour'] == 'collection':
                 table_name, ref_col_name = get_collection_table_name(node, intermine_model)
@@ -69,12 +72,14 @@ def get_referenced_im_ids(curs, source_class, source_im_ids, referenced_class, i
                     curs.execute(cmd)
 
                     for row in curs:
-                        referenced_im_ids.add(str(row[node['name'].lower()]))
+                        referenced_id = row[node['name'].lower()]
+                        if referenced_id is not None:
+                            referenced_im_ids.add(str(referenced_id))
 
     return referenced_im_ids
 
 
-def map_rows_to_dicts(curs, intermine_class, _map, intermine_model, restriction_list=None):
+def map_rows_to_dicts(curs, intermine_class, intermine_to_neo4j_map, intermine_model, restriction_list=None):
     """
     Map rows from the InterMine database into dictionaries that will then be added to Neo4J
 
@@ -87,7 +92,21 @@ def map_rows_to_dicts(curs, intermine_class, _map, intermine_model, restriction_
     """
     entities = {}
 
-    cmd = 'SELECT * FROM %s' % intermine_class
+    # We need to do this because postgres will be case sensitive for the table name in information_schema
+    intermine_class_table_name = intermine_class.lower()
+
+    # It's possible that some classes won't have tables because all their data is contained in other tables
+    cmd = "select exists(select * from information_schema.tables where table_name='%s')" % intermine_class_table_name
+    print(cmd)
+    curs.execute(cmd)
+    # print(curs.fetchone()[0])
+    if not curs.fetchone()[0]:
+        print("Ignoring mapping for table %s as it doesn't exist" % (intermine_class_table_name, ))
+        return entities
+
+    _map = intermine_to_neo4j_map['@maps'].get(intermine_class, {})
+
+    cmd = 'SELECT * FROM %s' % intermine_class_table_name
 
     if restriction_list is not None:
         if not restriction_list:
