@@ -85,7 +85,7 @@ def get_referenced_im_ids(curs, source_class, source_im_ids, referenced_class, i
     return referenced_im_ids
 
 
-def map_rows_to_dicts(curs, intermine_class, intermine_to_neo4j_map, intermine_model, restrictions=None):
+def map_rows_to_dicts(curs, intermine_class, intermine_to_neo4j_map, intermine_model, selections=None):
     """
     Map rows from the InterMine database into dictionaries that will then be added to Neo4J
 
@@ -94,7 +94,7 @@ def map_rows_to_dicts(curs, intermine_class, intermine_to_neo4j_map, intermine_m
     :param intermine_to_neo4j_map: Map of InterMine class property names to Neo4J property names,
         where this translation is necessary.
     :param intermine_model
-    :param restrictions: List of intermine IDs to push into Neo4J. If None then all IDs for that class are pushed.
+    :param selections: List of intermine IDs to push into Neo4J. If None then all IDs for that class are pushed.
     :return:
     """
     entities = {}
@@ -116,12 +116,12 @@ def map_rows_to_dicts(curs, intermine_class, intermine_to_neo4j_map, intermine_m
     cmd = "SELECT * FROM %s AS o, intermineobject AS i WHERE o.id = i.id AND i.class = 'org.intermine.model.bio.%s'" \
           % (intermine_class_table_name, intermine_class)
 
-    if restrictions is not None:
-        if not restrictions:
+    if selections is not None:
+        if not selections:
             return {}
 
         # print(','.join(restriction_list))
-        cmd += ' AND o.id IN (%s)' % ','.join(restrictions)
+        cmd += ' AND o.id IN (%s)' % ','.join(selections)
 
     # print(cmd)
     curs.execute(cmd)

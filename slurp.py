@@ -26,36 +26,37 @@ with \
     neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'passw0rd')) as driver, \
         conn.cursor() as curs:
 
-        restrictions = {source_class:set() for source_class in intermine_model.get_classes()}
+        selections = {source_class:set() for source_class in intermine_model.get_classes()}
 
         if args.gene is not None:
             curs.execute('SELECT id FROM gene where secondaryidentifier=%s', (args.gene, ))
-            restrictions['Gene'].add(str(curs.fetchone()['id']))
+            selections['Gene'].add(str(curs.fetchone()['id']))
         elif args.limit is not None:
             cmd = 'SELECT id FROM gene LIMIT %d' % args.limit
             curs.execute(cmd)
             for row in curs:
-                restrictions['Gene'].add(str(row['id']))
+                selections['Gene'].add(str(row['id']))
 
         depth = args.depth if args.depth else 1
 
-        for i in range(depth):
-            print('************ ROUND %d' % i)
-            for source_class, ids in restrictions.copy().items():
-                if len(ids) > 0:
-                    for referenced_class in intermine_model.get_classes():
-                        referenced_im_ids = sas.intermine_data_loaders.get_referenced_im_ids(
-                            curs, source_class, ids, referenced_class, intermine_model)
+        if len(selections['Gene']) > 0:
+            for i in range(depth):
+                print('************ ROUND %d' % i)
+                for source_class, ids in selections.copy().items():
+                    if len(ids) > 0:
+                        for referenced_class in intermine_model.get_classes():
+                            referenced_im_ids = sas.intermine_data_loaders.get_referenced_im_ids(
+                                curs, source_class, ids, referenced_class, intermine_model)
 
-                        restrictions[referenced_class] = restrictions[referenced_class].union(referenced_im_ids)
+                            selections[referenced_class] = selections[referenced_class].union(referenced_im_ids)
 
-            count = 0
-            for referenced_class in filter(lambda c: len(restrictions[c]) > 0, restrictions.keys()):
-                n = len(restrictions[referenced_class])
-                count += n
-                print('For %s got %d restrictions' % (referenced_class, n))
+                count = 0
+                for referenced_class in filter(lambda c: len(selections[c]) > 0, selections.keys()):
+                    n = len(selections[referenced_class])
+                    count += n
+                    print('For %s got %d restrictions' % (referenced_class, n))
 
-            print('Got %d total restrictions' % count)
+                print('Got %d total restrictions' % count)
 
         with driver.session() as session:
             for intermine_class in intermine_model.get_classes():
@@ -64,11 +65,11 @@ with \
                     intermine_class,
                     sas.intermine_data_loaders.map_rows_to_dicts(
                         curs, intermine_class,
-                        intermine_to_neo4j_map, intermine_model, restrictions.get(intermine_class)))
+                        intermine_to_neo4j_map, intermine_model, selections.get(intermine_class)))
 
             # for intermine_class in intermine_model.get_classes():
             # for intermine_class in 'Gene',:
-            for intermine_class in restrictions:
+            for intermine_class in selections:
                 # We need to specifically exclude this for now as DataSets connect to every BioEntity in the system
                 if intermine_class == 'DataSet':
                     continue
@@ -76,4 +77,4 @@ with \
                 print('Adding relationships for %s' % intermine_class)
                 sas.neo4j_pushers.add_relationships(
                     curs, session, intermine_class, intermine_model.get_classes(),
-                    intermine_model, restrictions[intermine_class])
+                    intermine_model, selections[intermine_class])

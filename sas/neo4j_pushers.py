@@ -46,7 +46,7 @@ def add_entities(session, _type, entities):
         session.run(cmd)
 
 
-def add_relationships(curs, session, source_class, target_classes, intermine_model, restrictions):
+def add_relationships(curs, session, source_class, target_classes, intermine_model, selections):
     """
     Add relationships between entities
     :param curs:
@@ -54,7 +54,7 @@ def add_relationships(curs, session, source_class, target_classes, intermine_mod
     :param source_class: The source class to add relationships
     :param target_classes: The target classes for adding relationships
     :param intermine_model:
-    :param restrictions:
+    :param selections:
     :return:
     """
 
@@ -113,12 +113,12 @@ def add_relationships(curs, session, source_class, target_classes, intermine_mod
                 cmd = "SELECT * FROM %s AS o, intermineobject AS i WHERE o.%s = i.id AND i.class = 'org.intermine.model.bio.%s'" \
                       % (table_name, node['reverse-reference'], source_class)
 
-                if restrictions is not None:
-                    if not restrictions:
+                if selections is not None:
+                    if not selections:
                         continue
 
                     # print(','.join(restriction_list))
-                    cmd += ' AND %s IN (%s)' % (node['reverse-reference'], ','.join(restrictions))
+                    cmd += ' AND %s IN (%s)' % (node['reverse-reference'], ','.join(selections))
 
                 curs.execute(cmd)
 
