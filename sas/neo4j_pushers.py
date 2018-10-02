@@ -1,18 +1,18 @@
 import sas.intermine_data_loaders
 
 
-def add_entities(session, _type, entities):
+def add_entities(session, intermine_class, entities):
     """
     Add entities
     :param session:
-    :param _type:
+    :param intermine_class:
     :param entities:
     :return:
     """
 
     # Need to create an index for more efficient joining when we need to connect intermine neo4j entities by their
     # im_id
-    session.run('CREATE INDEX ON :%s(im_id)' % _type)
+    session.run('CREATE INDEX ON :%s(im_id)' % intermine_class)
 
     i = 0
     entities_count = len(entities)
@@ -20,11 +20,11 @@ def add_entities(session, _type, entities):
     for im_id, entity in entities.items():
         i += 1
 
-        print('Adding %d of %d %s' % (i, entities_count, _type))
+        print('Adding %d of %d %s' % (i, entities_count, intermine_class))
 
         # print(entity)
 
-        cmd = 'CREATE (:%s {' % _type
+        cmd = 'CREATE (:%s {' % intermine_class
 
         count = 0
         limit = len(entity)
