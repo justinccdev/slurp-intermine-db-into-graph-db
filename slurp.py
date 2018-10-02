@@ -15,12 +15,7 @@ intermine_to_neo4j_map = sas.config_loaders.load_intermine_to_neo4j_map('config/
 intermine_model = sas.intermine_model.InterMineModel('intermine/genomic_model.xml')
 
 # If we are going to restrict the intermine entities that we map to neo4j, this is where we would do it
-restrictions = {
-    'Gene': set(),
-    'Organism': set(),
-    'Protein': set(),
-    'SOTerm': set()
-}
+restrictions = {'Gene': set()}
 
 parser = argparse.ArgumentParser('Slurp InterMine data into Neo4J')
 parser.add_argument('--depth', type=int, help='number of links to follow when slurping')
@@ -76,7 +71,8 @@ with \
                     session,
                     intermine_class,
                     sas.intermine_data_loaders.map_rows_to_dicts(
-                        curs, intermine_class, intermine_to_neo4j_map, intermine_model, restrictions[intermine_class]))
+                        curs, intermine_class,
+                        intermine_to_neo4j_map, intermine_model, restrictions.get(intermine_class)))
 
             # for intermine_class in intermine_model.get_classes():
             # for intermine_class in 'Gene',:
