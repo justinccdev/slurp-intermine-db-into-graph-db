@@ -49,14 +49,15 @@ with \
                         referenced_im_ids = sas.intermine_data_loaders.get_referenced_im_ids(
                             curs, source_class, ids, referenced_class, intermine_model)
 
-                        print('For %s => %s got referenced IDs %s'
-                              % (source_class, referenced_class, referenced_im_ids))
-
                         restrictions[referenced_class] = restrictions[referenced_class].union(referenced_im_ids)
 
-                        print('For %s got %s' % (referenced_class, restrictions[referenced_class]))
+            count = 0
+            for referenced_class in filter(lambda c: len(restrictions[c]) > 0, restrictions.keys()):
+                n = len(restrictions[referenced_class])
+                count += n
+                print('For %s got %d restrictions' % (referenced_class, n))
 
-            print(restrictions)
+            print('Got %d total restrictions' % count)
 
         with driver.session() as session:
             for intermine_class in intermine_model.get_classes():
