@@ -28,14 +28,14 @@ with \
         conn.cursor() as curs:
 
         if args.gene or args.limit:
-            selections = {source_class:set() for source_class in intermine_model.get_classes()}
+            selections = {source_class: set() for source_class in intermine_model.get_classes()}
         else:
             selections = None
 
-        if args.gene is not None:
+        if args.gene:
             curs.execute('SELECT id FROM gene where secondaryidentifier=%s', (args.gene, ))
-            selections['Gene'] = set({str(curs.fetchone()['id'])})
-        elif args.limit is not None:
+            selections['Gene'] = {str(curs.fetchone()['id'])}
+        elif args.limit:
             cmd = 'SELECT id FROM gene LIMIT %d' % args.limit
             curs.execute(cmd)
             for row in curs:

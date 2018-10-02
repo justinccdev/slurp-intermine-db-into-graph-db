@@ -117,7 +117,7 @@ def map_rows_to_dicts(curs, intermine_class, intermine_to_neo4j_map, intermine_m
           % (intermine_class_table_name, intermine_class)
 
     if selections is not None:
-        if len(selections[intermine_class]) <= 0:
+        if len(selections) <= 0:
             return {}
 
         # print(','.join(restriction_list))
