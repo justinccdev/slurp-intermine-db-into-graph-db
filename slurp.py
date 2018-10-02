@@ -76,5 +76,9 @@ with \
 
                 print('Adding relationships for %s' % intermine_class)
                 sas.neo4j_pushers.add_relationships(
-                    curs, session, intermine_class, intermine_model.get_classes(),
-                    intermine_model, selections[intermine_class])
+                    curs,
+                    session,
+                    intermine_class,
+                    intermine_model.get_classes(),
+                    intermine_model,
+                    selections[intermine_class])
