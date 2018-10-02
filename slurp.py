@@ -69,7 +69,11 @@ with \
 
             # for intermine_class in intermine_model.get_classes():
             # for intermine_class in 'Gene',:
-            for intermine_class in selections:
+            for intermine_class, selection in selections.items():
+                if len(selection) <= 0:
+                    continue
+
+                # print(selections[intermine_class])
                 # We need to specifically exclude this for now as DataSets connect to every BioEntity in the system
                 if intermine_class == 'DataSet':
                     continue
@@ -81,4 +85,4 @@ with \
                     intermine_class,
                     intermine_model.get_classes(),
                     intermine_model,
-                    selections[intermine_class])
+                    selection)
