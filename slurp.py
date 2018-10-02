@@ -44,14 +44,14 @@ with \
 
         for i in range(depth):
             print('************ ROUND %d' % i)
-            for intermine_class, ids in restrictions.copy().items():
+            for source_class, ids in restrictions.copy().items():
                 if len(ids) > 0:
                     for referenced_class in intermine_model.get_classes():
                         referenced_im_ids = sas.intermine_data_loaders.get_referenced_im_ids(
-                            curs, intermine_class, ids, referenced_class, intermine_model)
+                            curs, source_class, ids, referenced_class, intermine_model)
 
                         print('For %s => %s got referenced IDs %s'
-                              % (intermine_class, referenced_class, referenced_im_ids))
+                              % (source_class, referenced_class, referenced_im_ids))
 
                         if referenced_class not in restrictions:
                             restrictions[referenced_class] = set()
