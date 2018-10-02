@@ -103,8 +103,11 @@ def add_relationships(curs, session, source_class, target_classes, intermine_mod
                     if not selections:
                         continue
 
-                    # print(','.join(restriction_list))
                     cmd += ' AND %s IN (%s)' % (node['reverse-reference'], ','.join(selections))
+                    # print('Selecting: %s' % cmd)
+
+                    # TODO: In a table like bioentitiespublications we could get a big efficiency gain if we
+                    # also figured out all our selected bioentities and filtered on those too.
 
                 curs.execute(cmd)
 
