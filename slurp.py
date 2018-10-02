@@ -21,8 +21,6 @@ parser.add_argument('gene', nargs='?')
 
 args = parser.parse_args()
 
-print(intermine_model.get_classes())
-
 with \
     psycopg2.connect(dbname='synbiomine-v5-poc4', user='justincc', cursor_factory=psycopg2.extras.DictCursor) as conn, \
     neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'passw0rd')) as driver, \
