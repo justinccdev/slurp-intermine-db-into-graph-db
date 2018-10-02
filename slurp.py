@@ -14,9 +14,6 @@ import sas.intermine_model
 intermine_to_neo4j_map = sas.config_loaders.load_intermine_to_neo4j_map('config/intermine_to_neo4j_map.json')
 intermine_model = sas.intermine_model.InterMineModel('intermine/genomic_model.xml')
 
-# If we are going to restrict the intermine entities that we map to neo4j, this is where we would do it
-restrictions = {'Gene': set()}
-
 parser = argparse.ArgumentParser('Slurp InterMine data into Neo4J')
 parser.add_argument('--depth', type=int, help='number of links to follow when slurping')
 parser.add_argument('--limit', type=int, help='limit number of genes slurped if no gene id is specified')
@@ -30,6 +27,8 @@ with \
     psycopg2.connect(dbname='synbiomine-v5-poc4', user='justincc', cursor_factory=psycopg2.extras.DictCursor) as conn, \
     neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'passw0rd')) as driver, \
         conn.cursor() as curs:
+
+        restrictions = {source_class:set() for source_class in intermine_model.get_classes()}
 
         if args.gene is not None:
             curs.execute('SELECT id FROM gene where secondaryidentifier=%s', (args.gene, ))
@@ -52,9 +51,6 @@ with \
 
                         print('For %s => %s got referenced IDs %s'
                               % (source_class, referenced_class, referenced_im_ids))
-
-                        if referenced_class not in restrictions:
-                            restrictions[referenced_class] = set()
 
                         restrictions[referenced_class] = restrictions[referenced_class].union(referenced_im_ids)
 
