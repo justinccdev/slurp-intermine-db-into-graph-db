@@ -40,7 +40,7 @@ with \
             for row in curs:
                 restrictions['Gene'].add(str(row['id']))
 
-        depth = args.depth if args.depth is not None else 1
+        depth = args.depth if args.depth else 1
 
         for i in range(depth):
             print('************ ROUND %d' % i)
