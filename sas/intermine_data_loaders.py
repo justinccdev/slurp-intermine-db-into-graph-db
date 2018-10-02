@@ -148,9 +148,8 @@ def map_rows_to_dicts(curs, intermine_class, intermine_to_neo4j_map, intermine_m
                 if attr is not None:
                     entity[attr] = row[lc_attr]
 
-        # FIXME: Yes, in my hacking about I've ended up hard-coding things that need to be removed again
-        entity['im_id'] = row['id']
-        entity['type'] = row['class']
+        for intermine_column_name, neo4j_property_name in intermine_to_neo4j_map['@general'].items():
+            entity[neo4j_property_name] = row[intermine_column_name]
 
         entities[row['id']] = entity
 
