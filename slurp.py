@@ -50,7 +50,7 @@ with \
         else:
             depth = 1
 
-        for i in range(2):
+        for i in range(depth):
             print('************ ROUND %d' % i)
             for intermine_class, ids in restrictions.copy().items():
                 if len(ids) > 0:
