@@ -6,9 +6,10 @@ import neo4j.v1
 import psycopg2.extras
 
 import sas.config_loaders
-import sas.neo4j_pushers
 import sas.intermine_data_loaders
 import sas.intermine_model
+import sas.neo4j_pushers
+import sas.slurp
 
 
 intermine_to_neo4j_map = sas.config_loaders.load_intermine_to_neo4j_map('config/intermine_to_neo4j_map.json')
@@ -50,13 +51,7 @@ with \
 
                             selections[referenced_class] = selections[referenced_class].union(referenced_im_ids)
 
-                count = 0
-                for referenced_class in filter(lambda c: len(selections[c]) > 0, selections.keys()):
-                    n = len(selections[referenced_class])
-                    count += n
-                    print('For %s got %d restrictions' % (referenced_class, n))
-
-                print('Got %d total restrictions' % count)
+                sas.slurp.print_selections_counts(selections)
 
         with driver.session() as session:
             for intermine_class in intermine_model.get_classes():
