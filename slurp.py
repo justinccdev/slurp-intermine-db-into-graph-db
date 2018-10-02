@@ -27,11 +27,14 @@ with \
     neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'passw0rd')) as driver, \
         conn.cursor() as curs:
 
-        selections = {source_class:set() for source_class in intermine_model.get_classes()}
+        if args.gene or args.limit:
+            selections = {source_class:set() for source_class in intermine_model.get_classes()}
+        else:
+            selections = None
 
         if args.gene is not None:
             curs.execute('SELECT id FROM gene where secondaryidentifier=%s', (args.gene, ))
-            selections['Gene'].add(str(curs.fetchone()['id']))
+            selections['Gene'] = set({str(curs.fetchone()['id'])})
         elif args.limit is not None:
             cmd = 'SELECT id FROM gene LIMIT %d' % args.limit
             curs.execute(cmd)
@@ -40,7 +43,7 @@ with \
 
         depth = args.depth if args.depth else 1
 
-        if len(selections['Gene']) > 0:
+        if selections:
             for i in range(depth):
                 print('************ ROUND %d' % i)
                 for source_class, ids in selections.copy().items():
@@ -55,12 +58,14 @@ with \
 
         with driver.session() as session:
             for intermine_class in intermine_model.get_classes():
-                sas.neo4j_pushers.add_entities(
-                    session,
+                entities = sas.intermine_data_loaders.map_rows_to_dicts(
+                    curs,
                     intermine_class,
-                    sas.intermine_data_loaders.map_rows_to_dicts(
-                        curs, intermine_class,
-                        intermine_to_neo4j_map, intermine_model, selections.get(intermine_class)))
+                    intermine_to_neo4j_map,
+                    intermine_model,
+                    selections[intermine_class] if selections else None)
+
+                sas.neo4j_pushers.add_entities(session, intermine_class, entities)
 
             # for intermine_class in intermine_model.get_classes():
             # for intermine_class in 'Gene',:
