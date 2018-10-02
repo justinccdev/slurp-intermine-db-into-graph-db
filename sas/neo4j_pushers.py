@@ -22,9 +22,16 @@ def add_entities(session, intermine_class, entities):
 
         print('Adding %d of %d %s' % (i, entities_count, intermine_class))
 
-        # print(entity)
+        # MERGE appears to the same as checking existence manually
+        """
+        cmd = "MATCH (n:%s) where n.im_id = '%d' return count(*)" % (intermine_class, im_id)
+        result = session.run(cmd)
+        record = result.single()
+        if record['count(*)'] > 0:
+            continue
+            """
 
-        cmd = 'CREATE (:%s {' % intermine_class
+        cmd = 'MERGE (:%s {' % intermine_class
 
         count = 0
         limit = len(entity)
@@ -75,7 +82,7 @@ def add_relationships(curs, session, source_class, target_classes, intermine_mod
             if node['flavour'] == 'reference':
                 column_name = '%sid' % node['name'].lower()
 
-                cmd = "MATCH (s:%s),(t:%s) WHERE s.%s = t.im_id CREATE (s)-[:%s]->(t)" \
+                cmd = "MATCH (s:%s),(t:%s) WHERE s.%s = t.im_id MERGE (s)-[:%s]->(t)" \
                       % (source_class, target_class, column_name, node['name'])
 
                 # print(cmd)
@@ -116,7 +123,7 @@ def add_relationships(curs, session, source_class, target_classes, intermine_mod
                     i += 1
                     # print('Assessing %s row %d' % (table_name, i))
 
-                    cmd = "MATCH (s:%s),(t:%s) WHERE s.im_id = '%d' AND t.im_id = '%d' CREATE (s)-[:%s]->(t)" \
+                    cmd = "MATCH (s:%s),(t:%s) WHERE s.im_id = '%d' AND t.im_id = '%d' MERGE (s)-[:%s]->(t)" \
                         % (source_class, target_class,
                            row[node['reverse-reference'].lower()], row[node['name'].lower()], node['name'])
 
