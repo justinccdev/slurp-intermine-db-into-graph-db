@@ -86,3 +86,5 @@ with \
                     intermine_model.get_classes(),
                     intermine_model,
                     selection)
+
+            print('Finishing up')
