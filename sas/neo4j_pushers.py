@@ -95,21 +95,6 @@ def add_relationships(curs, session, source_class, target_classes, intermine_mod
                     print('Table %s for adding relationships does not exist. Skipping' % table_name)
                     continue
 
-                """
-                cmd = 'SELECT * from %s' % table_name
-
-                if restrictions is not None:
-                    if not restrictions:
-                        continue
-
-                    # print(','.join(restrictions))
-                    cmd += ' WHERE %s IN (%s)' % (node['reverse-reference'], ','.join(restrictions))
-
-                # print(cmd)
-                curs.execute(cmd)
-                """
-
-                # TODO: Need to replace o.id and i.id with the proper class names
                 cmd = "SELECT * FROM %s AS o, intermineobject AS i WHERE o.%s = i.id AND i.class = 'org.intermine.model.bio.%s'" \
                       % (table_name, node['reverse-reference'], source_class)
 
