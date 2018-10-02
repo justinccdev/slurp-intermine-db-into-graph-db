@@ -49,6 +49,9 @@ with \
                 for source_class, ids in selections.copy().items():
                     if len(ids) > 0:
                         for referenced_class in intermine_model.get_classes():
+                            if referenced_class == 'BioEntity':
+                                continue
+
                             referenced_im_ids = sas.intermine_data_loaders.get_referenced_im_ids(
                                 curs, source_class, ids, referenced_class, intermine_model)
 
@@ -67,15 +70,14 @@ with \
 
                 sas.neo4j_pushers.add_entities(session, intermine_class, entities)
 
-            # for intermine_class in intermine_model.get_classes():
-            # for intermine_class in 'Gene',:
             for intermine_class, selection in selections.items():
                 if len(selection) <= 0:
                     continue
 
-                # print(selections[intermine_class])
-                # We need to specifically exclude this for now as DataSets connect to every BioEntity in the system
-                if intermine_class == 'DataSet':
+                # FIXME: We need to specifically exclude these relationships for now as they connect to every BioEntity in
+                # the system which is a huge performance hog (probably can be improved by collecting all the leaf IDs
+                # we are referencing and using those to restrict the relationships from postgres that we look at
+                if intermine_class == 'DataSet' or intermine_class == 'Publication':
                     continue
 
                 print('Adding relationships for %s' % intermine_class)
