@@ -78,7 +78,13 @@ with \
                     sas.intermine_data_loaders.map_rows_to_dicts(
                         curs, intermine_class, intermine_to_neo4j_map, intermine_model, restrictions[intermine_class]))
 
-            for intermine_class in intermine_model.get_classes():
+            # for intermine_class in intermine_model.get_classes():
+            # for intermine_class in 'Gene',:
+            for intermine_class in restrictions:
+                # We need to specifically exclude this for now as DataSets connect to every BioEntity in the system
+                if intermine_class == 'DataSet':
+                    continue
+
                 print('Adding relationships for %s' % intermine_class)
                 sas.neo4j_pushers.add_relationships(
                     curs, session, intermine_class, intermine_model.get_classes(),
