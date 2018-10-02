@@ -15,11 +15,12 @@ def add_entities(session, _type, entities):
     session.run('CREATE INDEX ON :%s(im_id)' % _type)
 
     i = 0
+    entities_count = len(entities)
 
     for im_id, entity in entities.items():
         i += 1
 
-        # print('Processing %d of %d %s' % (i, len(entities), _type))
+        print('Adding %d of %d %s' % (i, entities_count, _type))
 
         # print(entity)
 
