@@ -69,9 +69,9 @@ def process_node_properties(node, node_type, intermine_model, rdf_prefixes, pref
             p, o = term, value
 
         print('Term was [%s]' % term)
-        if term is not None:
+        if term:
             prefix, _ = find_rdf_prefix(term, rdf_prefixes)
-            if prefix is not None:
+            if prefix:
                 prefixes_used.add(prefix)
 
             pos.append((p, o))
