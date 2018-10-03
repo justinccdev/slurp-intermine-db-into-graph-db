@@ -113,8 +113,12 @@ def map_rows_to_dicts(curs, intermine_class, intermine_to_neo4j_map, intermine_m
 
     _map = intermine_to_neo4j_map['@maps'].get(intermine_class, {})
 
+    """
     cmd = "SELECT * FROM %s AS o, intermineobject AS i WHERE o.id = i.id AND i.class = 'org.intermine.model.bio.%s'" \
           % (intermine_class_table_name, intermine_class)
+    """
+
+    cmd = "SELECT * FROM %s AS o, intermineobject AS i WHERE o.id = i.id" % (intermine_class_table_name)
 
     # print('Selections for %s, %s' % (intermine_class, selections))
     if selections is not None:
