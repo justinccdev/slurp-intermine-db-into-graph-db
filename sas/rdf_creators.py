@@ -104,9 +104,9 @@ def process_node_relationships(
 
         term = node.get('term')
 
-        if term is not None:
+        if term:
             prefix, _ = find_rdf_prefix(term, rdf_prefixes)
-            if prefix is not None:
+            if prefix:
                 prefixes_used.add(prefix)
 
             object_name = create_node_fair_uri(record['b'], fair_prefixes)
