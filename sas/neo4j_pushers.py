@@ -49,7 +49,7 @@ def add_entities(session, intermine_class, entities):
             count += 1
 
             # Escape single quotes
-            if v is not None and isinstance(v, str):
+            if v and isinstance(v, str):
                 v = v.replace("'", "\\'")
 
             cmd += " %s:'%s'" % (k, v)
@@ -105,7 +105,7 @@ def add_relationships(curs, session, source_class, target_classes, intermine_mod
 
                 table_name, _ = sas.intermine_data_loaders.get_collection_table_name(node, intermine_model)
 
-                if table_name is None:
+                if not table_name:
                     continue
 
                 curs.execute("SELECT to_regclass('%s')" % table_name)
