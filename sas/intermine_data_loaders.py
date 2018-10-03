@@ -62,7 +62,9 @@ def get_referenced_im_ids(curs, source_class, source_im_ids, referenced_class, i
                 table_name = source_class.lower()
                 column_name = '%sid' % node['name'].lower()
                 cmd = 'SELECT %s FROM %s WHERE id=%s' % (column_name, table_name, im_id)
-                # print(cmd)
+
+                # if source_class == 'GOAnnotation': print(cmd)
+
                 curs.execute(cmd)
                 referenced_id = curs.fetchone()[column_name]
 

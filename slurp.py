@@ -80,6 +80,8 @@ with \
                 if intermine_class == 'DataSet' or intermine_class == 'Publication':
                     continue
 
+                # if intermine_class != 'GOAnnotation': continue
+
                 print('Adding relationships for %s' % intermine_class)
                 sas.neo4j_pushers.add_relationships(
                     curs,

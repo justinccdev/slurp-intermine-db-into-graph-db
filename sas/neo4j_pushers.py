@@ -20,6 +20,16 @@ def add_entities(session, intermine_class, entities):
     for im_id, entity in entities.items():
         i += 1
 
+        # XXX: A failed attempt to adjust the referenced class for child referenced classes (e.g. GOAnnotation
+        # referencing OntologyTerm when actually this should be GOTerm. This might even be a bug in the construction
+        # of the synbiomine-v5-poc4 database
+        """
+        cmd = 'SELECT class FROM intermineobject WHERE id=%d' % im_id
+        curs.execute(cmd)
+        new_class = curs.fetchone()['class'].rpartition('.')[2]
+        if intermine_class == 'OntologyTerm': print(cmd)
+        """
+
         print('Adding %d of %d %s' % (i, entities_count, intermine_class))
 
         # MERGE appears to the same as checking existence manually
@@ -67,7 +77,7 @@ def add_relationships(curs, session, source_class, target_classes, intermine_mod
     """
 
     for target_class in target_classes:
-        print('Adding %s->%s relationships' % (source_class, target_class))
+        # print('Adding %s->%s relationships' % (source_class, target_class))
 
         paths = intermine_model.get_paths_for_class(source_class)
         for path in sorted(paths):
@@ -85,7 +95,7 @@ def add_relationships(curs, session, source_class, target_classes, intermine_mod
                 cmd = "MATCH (s:%s),(t:%s) WHERE s.%s = t.im_id MERGE (s)-[:%s]->(t)" \
                       % (source_class, target_class, column_name, node['name'])
 
-                # print(cmd)
+                # if source_class == 'GOAnnotation' and target_class == 'OntologyTerm': print(cmd)
                 session.run(cmd)
 
             elif node['flavour'] == 'collection':
@@ -127,4 +137,5 @@ def add_relationships(curs, session, source_class, target_classes, intermine_mod
                         % (source_class, target_class,
                            row[node['reverse-reference'].lower()], row[node['name'].lower()], node['name'])
 
+                    # print(cmd)
                     session.run(cmd)
