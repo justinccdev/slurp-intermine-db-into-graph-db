@@ -64,11 +64,7 @@ def process_node_properties(node, node_type, intermine_model, rdf_prefixes, pref
             print('Looking for path [%s]' % path)
 
             node = intermine_model.get(path)
-
-            if not node is None:
-                term = node.get('term')
-            else:
-                term = None
+            term = node.get('term') if node else None
 
             p, o = term, value
 
