@@ -5,6 +5,6 @@ Experiments with slurping data directly from the InterMine database into neo4j t
 spitting it out again as RDF
 
 ## Programs
-`slurp.py` - primitive incomplete toy slurper
+`slurp.py` - slurper
 
-`spit.py` - primitive incomplete toy spitter
+`spit.py` - spitter
