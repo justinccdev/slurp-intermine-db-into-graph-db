@@ -38,4 +38,5 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
         sas.rdf_creators.process_node_relationships(
             result, class_name, intermine_model, rdf_prefixes, prefixes_used, fair_prefixes, pos)
 
+print('\n\nTURTLE\n')
 print(sas.rdf_creators.create_rdf_output(rdf_prefixes, prefixes_used, subjects), end='')
