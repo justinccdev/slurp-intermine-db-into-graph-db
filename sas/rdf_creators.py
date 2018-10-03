@@ -140,12 +140,7 @@ def create_rdf_output(prefixes, prefixes_used, subjects):
             o = get_rdf_for_triple_part(o, prefixes)
 
             output += '  %s %s ' % (p, o)
-
-            if n < limit:
-                output += ';'
-            else:
-                output += '.'
-
+            output += ';' if n < limit else '.'
             output += '\n'
 
     return output
