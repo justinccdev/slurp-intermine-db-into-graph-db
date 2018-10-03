@@ -1,7 +1,7 @@
 {
     "@general": {
         "id": "im_id",
-        "class": "type"
+        "class": "class"
     },
 
     "@maps": {

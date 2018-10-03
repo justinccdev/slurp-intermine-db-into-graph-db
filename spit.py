@@ -29,7 +29,7 @@ with neo4j.v1.GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'pass
         pos = []
         subjects[subject_name] = pos
 
-        class_name = node['type'].rpartition('.')[2]
+        class_name = node['class'].rpartition('.')[2]
         sas.rdf_creators.process_node_properties(node, class_name, intermine_model, rdf_prefixes, prefixes_used, pos)
 
         # look for relationships
