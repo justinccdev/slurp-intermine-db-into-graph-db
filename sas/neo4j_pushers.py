@@ -113,7 +113,8 @@ def add_relationships(curs, session, source_class, target_classes, intermine_mod
                     print('Table %s for adding relationships does not exist. Skipping' % table_name)
                     continue
 
-                cmd = "SELECT * FROM %s AS o, intermineobject AS i WHERE o.%s = i.id AND i.class = 'org.intermine.model.bio.%s'" \
+                cmd = "SELECT * FROM %s AS o, intermineobject AS i WHERE o.%s = i.id" \
+                      " AND i.class = 'org.intermine.model.bio.%s'" \
                       % (table_name, node['reverse-reference'], source_class)
 
                 if selections is not None:
