@@ -7,7 +7,6 @@ def create_node_fair_uri(node, fair_prefixes):
     :return:
     """
     prefix = fair_prefixes.get(node['class'], 'unknown')
-
     return 'http://synbiomine.org/%s:%s' % (prefix, node['id'])
 
 
