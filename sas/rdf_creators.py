@@ -97,7 +97,12 @@ def process_node_relationships(
     for record in relationships:
         predicate = record['type(r)']
         print(predicate)
-        term = intermine_model.get('%s.%s' % (intermine_class, predicate)).get('term')
+        node = intermine_model.get('%s.%s' % (intermine_class, predicate))
+
+        if not node:
+            continue
+
+        term = node.get('term')
 
         if term is not None:
             prefix, _ = find_rdf_prefix(term, rdf_prefixes)
