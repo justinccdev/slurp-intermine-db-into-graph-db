@@ -55,7 +55,7 @@ def process_node_properties(node, node_type, intermine_model, rdf_prefixes, pref
     for key, value in sorted(node.items()):
         print('KEY-VALUE: %s,%s' % (key, value))
 
-        if key == 'type':
+        if key == 'class':
             term = intermine_model.get(node_type).get('term')
             p, o = 'a', term
         else:
