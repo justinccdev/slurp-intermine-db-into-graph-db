@@ -96,7 +96,7 @@ class InterMineModel:
 
             parents = class_tree[_class]
 
-            if parents is not None:
+            if parents:
                 for parent in parents:
                     paths.extend(get_ancestor_paths(parent))
 
